@@ -1,0 +1,32 @@
+import type { Language, LengthId, StructureId, ThemeId } from "./types";
+
+/** Libellés affichés dans l'interface (toujours en français, quelle que soit la langue du poème généré). */
+export const LANGUAGE_LABELS: Record<Language, string> = {
+  fr: "Français",
+  en: "English",
+};
+
+export const THEME_UI_LABELS: Record<ThemeId, { label: string; hint: string }> = {
+  tendre: { label: "Tendre", hint: "douceur, gestes discrets" },
+  melancolique: { label: "Mélancolique", hint: "pluie, nostalgie douce" },
+  reveur: { label: "Rêveur", hint: "nuages, songes, étoiles" },
+  lumineux: { label: "Lumineux", hint: "matin clair, espérance" },
+  apaisant: { label: "Apaisant", hint: "thé chaud, silence cosy" },
+};
+
+export const STRUCTURE_UI_LABELS: Record<StructureId, { label: string; hint: string }> = {
+  haiku: { label: "Haïku", hint: "3 vers, 5-7-5" },
+  vers_libre: { label: "Vers libre", hint: "sans rimes, phrasé naturel" },
+  forme_courte_rimee: { label: "Forme courte rimée", hint: "distiques rimés" },
+};
+
+export const LENGTH_UI_LABELS: Record<LengthId, string> = {
+  court: "Court",
+  moyen: "Moyen",
+  long: "Long",
+};
+
+export const SOURCE_UI_LABELS: Record<"maison" | "llm", string> = {
+  maison: "générateur maison",
+  llm: "IA",
+};

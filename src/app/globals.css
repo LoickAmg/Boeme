@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/*
+ * DA confirmée avec l'utilisateur : fond ivoire/écru (jamais blanc pur),
+ * rose poudré désaturé en accent, touches beige/lin, encre sobre pour le
+ * texte (jamais noir pur). Chic, simple, cosy — un peu "belge" (calme,
+ * feutré, sans éclat).
+ */
+:root {
+  --color-ivory: #f8f3ec;
+  --color-ivory-soft: #f2ead9;
+  --color-linen: #ece0cd;
+  --color-linen-deep: #ddccae;
+  --color-rose: #c9a4a1;
+  --color-rose-soft: #ddc0bd;
+  --color-rose-deep: #ad817d;
+  --color-ink: #3a332d;
+  --color-ink-soft: #79706a;
+  --color-ink-faint: #a89e97;
+}
+
+@theme inline {
+  --color-ivory: var(--color-ivory);
+  --color-ivory-soft: var(--color-ivory-soft);
+  --color-linen: var(--color-linen);
+  --color-linen-deep: var(--color-linen-deep);
+  --color-rose: var(--color-rose);
+  --color-rose-soft: var(--color-rose-soft);
+  --color-rose-deep: var(--color-rose-deep);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-ink-faint: var(--color-ink-faint);
+
+  --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-ivory);
+  color: var(--color-ink);
+}
+
+::selection {
+  background: var(--color-rose-soft);
+  color: var(--color-ink);
+}
