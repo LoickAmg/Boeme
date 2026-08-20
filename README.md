@@ -80,18 +80,3 @@ supplémentaire au build. La migration est idempotente
 ```bash
 DATABASE_URL=postgresql://... npm run db:migrate
 ```
-
-## Déploiement (Vercel)
-
-1. Pousser le projet sur GitHub.
-2. Importer le repo dans Vercel.
-3. Ajouter une base Postgres (intégration Vercel Postgres, ou Neon /
-   Supabase / autre — il suffit que `DATABASE_URL` soit renseignée dans les
-   variables d'environnement du projet).
-4. Lancer la migration une fois (`npm run db:migrate` en local avec
-   `DATABASE_URL` pointée sur la base de prod, ou via un script one-off).
-5. (Optionnel) Renseigner `POEM_LLM_API_KEY` pour activer le moteur LLM.
-6. Déployer.
-
-Aucune autre configuration n'est nécessaire — le site fonctionne
-entièrement avec le générateur maison si aucune clé LLM n'est fournie.
