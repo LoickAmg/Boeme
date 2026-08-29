@@ -36,8 +36,20 @@
 }
 
 body {
-  background: var(--color-ivory);
+  background-color: var(--color-ivory);
+  background-image: radial-gradient(rgba(58, 51, 45, 0.045) 0.55px, transparent 0.55px);
+  background-size: 7px 7px;
   color: var(--color-ink);
+  text-rendering: optimizeLegibility;
+}
+
+:where(p, li) {
+  max-width: 68ch;
+}
+
+:where(button, a, input, textarea, select):focus-visible {
+  outline: 2px solid var(--color-rose-deep);
+  outline-offset: 3px;
 }
 
 ::selection {

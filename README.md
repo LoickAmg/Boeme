@@ -80,3 +80,19 @@ supplémentaire au build. La migration est idempotente
 ```bash
 DATABASE_URL=postgresql://... npm run db:migrate
 ```
+
+## Architecture et décisions
+
+L’interface et les routes serveur vivent dans l’App Router Next.js. Le générateur maison est le chemin nominal : il permet une démonstration locale déterministe, sans clé API, sans quota et sans dépendance à un fournisseur externe. Le moteur LLM est une extension optionnelle, appelée uniquement côté serveur lorsque `POEM_LLM_API_KEY` est configurée ; cette séparation évite d’exposer la clé au navigateur et garantit un repli fonctionnel lorsque le fournisseur est indisponible.
+
+Le catalogue public stocke les poèmes générés afin de former une galerie partagée. Il faut donc considérer tout texte envoyé à la galerie comme public et ne jamais y placer de donnée personnelle, de secret ou de contenu confidentiel. Les thèmes sont sélectionnés dans une liste contrôlée ; cela réduit les abus de prompt mais ne constitue pas une modération complète.
+
+## Coût, confidentialité et limites
+
+Le générateur maison n’occasionne aucun appel externe. Le mode LLM peut générer des coûts, dépend des quotas et transmet le prompt au fournisseur configuré selon ses propres conditions. En production, renseigner les variables uniquement côté serveur, limiter les quotas par utilisateur ou par adresse IP, journaliser les erreurs sans enregistrer les clés et ajouter une modération avant publication si la galerie est ouverte au public.
+
+Le projet est un **prototype démonstratif**, et non un service de génération audité. La qualité stylistique dépend du corpus embarqué ou du modèle choisi ; aucune métrique de qualité littéraire n’est prétendue. La base Postgres est nécessaire pour la galerie en production, tandis que le build reste indépendant de la disponibilité de la base.
+
+## Démonstration reproductible
+
+Pour une démonstration sans clé LLM, laisser `POEM_LLM_API_KEY` vide, appliquer la migration et générer plusieurs poèmes avec les mêmes langue, thème, structure et longueur. Le moteur maison permet de vérifier le comportement sans réseau ni quota. Pour tester le fallback, configurer volontairement une URL LLM indisponible et vérifier que la requête revient au moteur maison sans exposer l’erreur interne à l’utilisateur.
