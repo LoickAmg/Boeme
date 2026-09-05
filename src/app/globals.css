@@ -37,8 +37,6 @@
 
 body {
   background-color: var(--color-ivory);
-  background-image: radial-gradient(rgba(58, 51, 45, 0.045) 0.55px, transparent 0.55px);
-  background-size: 7px 7px;
   color: var(--color-ink);
   text-rendering: optimizeLegibility;
 }

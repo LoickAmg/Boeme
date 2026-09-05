@@ -68,10 +68,10 @@ export function GeneratorForm({ onGenerated }: GeneratorFormProps) {
         throw new Error("La génération a échoué.");
       }
 
-      const data = (await response.json()) as { poem: Poem };
-      setPoem(data.poem);
+      const payload = (await response.json()) as { poem: Poem };
+      setPoem(payload.poem);
       setStatus("idle");
-      onGenerated?.(data.poem);
+      onGenerated?.(payload.poem);
     } catch {
       setStatus("error");
     }

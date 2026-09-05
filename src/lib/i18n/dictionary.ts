@@ -36,6 +36,44 @@ export interface Dictionary {
   sources: Record<"maison" | "llm", string>;
   /** Passé à Intl.DateTimeFormat pour la date sous chaque poème. */
   dateLocale: string;
+  footerLinks: { mentionsLegales: string; confidentialite: string; contact: string };
+  legal: {
+    updatedLabel: string;
+    contactEmail: string;
+    mentions: {
+      title: string;
+      intro: string;
+      publisherTitle: string;
+      editor: string;
+      toFill: string;
+      addressLabel: string;
+      directorLabel: string;
+      directorTitle: string;
+      hostingTitle: string;
+      hostLabel: string;
+      ipTitle: string;
+      ipBody1: string;
+      ipBody2: string;
+      dataTitle: string;
+      dataBody: string;
+    };
+    privacy: {
+      title: string;
+      introTitle: string;
+      introBody: string;
+      legalBaseTitle: string;
+      legalBaseBody: string;
+      retentionTitle: string;
+      retentionBody: string;
+      rightsTitle: string;
+      rightsBody: string;
+      controllerTitle: string;
+      controllerBody: string;
+      contact: string;
+    };
+    contactPage: { title: string; intro: string; emailTitle: string; emailBody: string };
+  };
+  notFound: { title: string; body: string; back: string };
 }
 
 export const DICTIONARIES: Record<UiLocale, Dictionary> = {
@@ -85,6 +123,60 @@ export const DICTIONARIES: Record<UiLocale, Dictionary> = {
     lengths: { court: "Court", moyen: "Moyen", long: "Long" },
     sources: { maison: "générateur maison", llm: "IA" },
     dateLocale: "fr-FR",
+    footerLinks: { mentionsLegales: "Mentions légales", confidentialite: "Confidentialité", contact: "Contact" },
+    legal: {
+      updatedLabel: "Dernière mise à jour : septembre 2026",
+      contactEmail: "contact@exemple.fr",
+      mentions: {
+        title: "Mentions légales",
+        intro: "Le site Poèmes est édité par :",
+        publisherTitle: "Éditeur du site",
+        editor: "Nom de l'éditeur",
+        toFill: "[À compléter]",
+        addressLabel: "adresse postale",
+        directorLabel: "directeur de la publication",
+        directorTitle: "Directeur de la publication",
+        hostingTitle: "Hébergement",
+        hostLabel: "nom et adresse de l'hébergeur",
+        ipTitle: "Propriété intellectuelle",
+        ipBody1:
+          "L'ensemble des contenus de ce site (textes, code) est protégé par le droit d'auteur. Toute reproduction, même partielle, sans autorisation préalable est interdite.",
+        ipBody2:
+          "Les poèmes générés sont publiés par leurs auteurs au sein de la galerie publique, sans modération manuelle.",
+        dataTitle: "Données et responsabilité",
+        dataBody:
+          "Aucun compte ni cookie de suivi n'est utilisé. Les données de connexion éventuelles sont traitées conformément à la politique de confidentialité.",
+      },
+      privacy: {
+        title: "Politique de confidentialité (RGPD)",
+        introTitle: "Traitement des données",
+        introBody:
+          "Le service ne collecte aucune donnée personnelle : pas de compte, pas de cookie de suivi, pas d'outil d'analyse tiers.",
+        legalBaseTitle: "Base légale",
+        legalBaseBody:
+          "Aucun traitement de données personnelles n'est réalisé par ce site. Les poèmes soumis à la galerie doivent être considérés comme publics.",
+        retentionTitle: "Durée de conservation",
+        retentionBody:
+          "Sans données personnelles collectées, aucune durée de conservation ne s'applique.",
+        rightsTitle: "Vos droits",
+        rightsBody:
+          "En l'absence de traitement de données, aucun droit particulier ne s'exerce ; pour toute question, contactez-nous.",
+        controllerTitle: "Responsable de traitement",
+        controllerBody: "[À compléter] — nom et coordonnées du responsable de traitement.",
+        contact: "Pour toute question :",
+      },
+      contactPage: {
+        title: "Contact",
+        intro: "Une question, une remarque ou une suggestion ? Écrivez-nous à l'adresse suivante :",
+        emailTitle: "Contact par email",
+        emailBody: "Nous répondons généralement sous quelques jours ouvrés.",
+      },
+    },
+    notFound: {
+      title: "Cette page n'existe pas.",
+      body: "Le poème que vous cherchez est introuvable : il a été déplacé, retiré ou l'adresse est erronée.",
+      back: "Retour au générateur",
+    },
   },
   en: {
     metaTitle: "Poems — a poetry generator",
@@ -132,6 +224,60 @@ export const DICTIONARIES: Record<UiLocale, Dictionary> = {
     lengths: { court: "Short", moyen: "Medium", long: "Long" },
     sources: { maison: "homemade generator", llm: "AI" },
     dateLocale: "en-US",
+    footerLinks: { mentionsLegales: "Legal notice", confidentialite: "Privacy", contact: "Contact" },
+    legal: {
+      updatedLabel: "Last updated: September 2026",
+      contactEmail: "contact@exemple.fr",
+      mentions: {
+        title: "Legal notice",
+        intro: "The Poems website is published by:",
+        publisherTitle: "Site publisher",
+        editor: "Publisher name",
+        toFill: "[To be filled in]",
+        addressLabel: "postal address",
+        directorLabel: "publication director",
+        directorTitle: "Publication director",
+        hostingTitle: "Hosting",
+        hostLabel: "name and address of the host",
+        ipTitle: "Intellectual property",
+        ipBody1:
+          "All content on this site (text, code) is protected by copyright. Any reproduction, even partial, without prior authorisation is prohibited.",
+        ipBody2:
+          "Generated poems are published by their authors in the public gallery, without manual moderation.",
+        dataTitle: "Data and liability",
+        dataBody:
+          "No account or tracking cookie is used. Any connection data is processed in accordance with the privacy policy.",
+      },
+      privacy: {
+        title: "Privacy policy (GDPR)",
+        introTitle: "Data processing",
+        introBody:
+          "This service collects no personal data: no account, no tracking cookie, no third-party analytics.",
+        legalBaseTitle: "Legal basis",
+        legalBaseBody:
+          "No personal data is processed by this site. Poems submitted to the gallery must be considered public.",
+        retentionTitle: "Retention period",
+        retentionBody:
+          "With no personal data collected, no retention period applies.",
+        rightsTitle: "Your rights",
+        rightsBody:
+          "With no data processing, no specific rights apply; for any question, please contact us.",
+        controllerTitle: "Data controller",
+        controllerBody: "[To be filled in] — name and contact details of the data controller.",
+        contact: "For any question:",
+      },
+      contactPage: {
+        title: "Contact",
+        intro: "A question, a note or a suggestion? Write to us at the following address:",
+        emailTitle: "Contact by email",
+        emailBody: "We usually reply within a few business days.",
+      },
+    },
+    notFound: {
+      title: "This page does not exist.",
+      body: "The poem you are looking for cannot be found: it may have been moved, removed, or the address is incorrect.",
+      back: "Back to the generator",
+    },
   },
 };
 

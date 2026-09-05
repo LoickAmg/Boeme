@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 // Polices auto-hébergées via @fontsource (fichiers embarqués dans le
 // bundle, aucun appel réseau vers Google Fonts — ni au build, ni au runtime).
@@ -40,7 +41,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <SiteHeader />
           <div className="flex flex-1 flex-col">{children}</div>
           <footer className="border-t border-linen-deep/60 px-6 py-6 text-center text-xs text-ink-faint sm:px-8">
-            {dict.footer}
+            <p className="mb-3">{dict.footer}</p>
+            <nav className="flex items-center justify-center gap-6" aria-label="Liens légaux">
+              <Link href="/mentions-legales/">{dict.footerLinks.mentionsLegales}</Link>
+              <Link href="/confidentialite/">{dict.footerLinks.confidentialite}</Link>
+              <Link href="/contact/">{dict.footerLinks.contact}</Link>
+            </nav>
           </footer>
         </LocaleProvider>
       </body>

@@ -96,3 +96,20 @@ Le projet est un **prototype démonstratif**, et non un service de génération 
 ## Démonstration reproductible
 
 Pour une démonstration sans clé LLM, laisser `POEM_LLM_API_KEY` vide, appliquer la migration et générer plusieurs poèmes avec les mêmes langue, thème, structure et longueur. Le moteur maison permet de vérifier le comportement sans réseau ni quota. Pour tester le fallback, configurer volontairement une URL LLM indisponible et vérifier que la requête revient au moteur maison sans exposer l’erreur interne à l’utilisateur.
+
+## Identité visuelle
+
+Typographie auto-hébergée via `@fontsource` (aucun Google Fonts, aucun appel réseau) :
+
+- **Cormorant Garamond** (`--font-serif`) pour les titres et le ton éditorial poétique ;
+- **Manrope** (`--font-sans`) pour le corps de texte et l’interface.
+
+Couleurs déclarées comme variables CSS dans `app/globals.css` (palette papier/encre/rose, `linen`, `ivory`, `ink`, `rose`) — aucun code hex en dur dans les composants. Pas de motif « dot grid » ni dégradé générique en fond.
+
+## Pages légales et erreurs
+
+- `src/app/mentions-legales/`, `src/app/confidentialite/`, `src/app/contact/` — pages publiques, contenus bilingues (fr/en) via `src/lib/i18n/dictionary.ts` ;
+- `src/app/not-found.tsx` — page d’erreur 404 internationale, public ;
+- Liens légaux dans le footer de `src/app/layout.tsx`.
+
+Les champs organisés autour de `[À compléter]` (éditeur, adresse, directeur de publication, hébergeur, responsable de traitement) et l’adresse `contact@exemple.fr` sont à personnaliser avant mise en production.

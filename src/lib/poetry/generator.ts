@@ -39,11 +39,12 @@ function pickMany<T>(items: readonly T[], count: number, rng: Rng): T[] {
   }
   // Pas assez de lignes distinctes dans la banque : on complète en
   // repiochant (avec répétition) plutôt que d'échouer.
-  const result = [...shuffled];
-  while (result.length < count) {
-    result.push(pickOne(items, rng));
+  const picked = [...shuffled];
+  while (picked.length < count) {
+    picked.push(pickOne(items, rng));
   }
-  return result;
+
+  return picked;
 }
 
 function generateHaiku(bank: ThemeBank, rng: Rng): string {
