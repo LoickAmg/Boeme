@@ -44,13 +44,12 @@ export interface Dictionary {
       title: string;
       intro: string;
       publisherTitle: string;
-      editor: string;
-      toFill: string;
-      addressLabel: string;
-      directorLabel: string;
+      publisherName: string;
+      addressNote: string;
+      directorName: string;
       directorTitle: string;
       hostingTitle: string;
-      hostLabel: string;
+      hostText: string;
       ipTitle: string;
       ipBody1: string;
       ipBody2: string;
@@ -126,18 +125,19 @@ export const DICTIONARIES: Record<UiLocale, Dictionary> = {
     footerLinks: { mentionsLegales: "Mentions légales", confidentialite: "Confidentialité", contact: "Contact" },
     legal: {
       updatedLabel: "Dernière mise à jour : septembre 2026",
-      contactEmail: "contact@exemple.fr",
+      contactEmail: "mahounaamg@gmail.com",
       mentions: {
         title: "Mentions légales",
         intro: "Le site Poèmes est édité par :",
         publisherTitle: "Éditeur du site",
-        editor: "Nom de l'éditeur",
-        toFill: "[À compléter]",
-        addressLabel: "adresse postale",
-        directorLabel: "directeur de la publication",
+        publisherName: "Mahouna",
+        addressNote:
+          "Éditeur non professionnel : l'adresse postale n'est pas publiée et est communiquée à l'hébergeur (loi n° 2004-575 du 21 juin 2004, art. 6, III, 2°).",
+        directorName: "Mahouna",
         directorTitle: "Directeur de la publication",
         hostingTitle: "Hébergement",
-        hostLabel: "nom et adresse de l'hébergeur",
+        hostText:
+          "Le code source est publié sur GitHub (github.com/LoickAmg/Poem-Generator). Le nom de l'hébergeur du service en ligne sera indiqué ici dès sa mise en production.",
         ipTitle: "Propriété intellectuelle",
         ipBody1:
           "L'ensemble des contenus de ce site (textes, code) est protégé par le droit d'auteur. Toute reproduction, même partielle, sans autorisation préalable est interdite.",
@@ -162,7 +162,7 @@ export const DICTIONARIES: Record<UiLocale, Dictionary> = {
         rightsBody:
           "En l'absence de traitement de données, aucun droit particulier ne s'exerce ; pour toute question, contactez-nous.",
         controllerTitle: "Responsable de traitement",
-        controllerBody: "[À compléter] — nom et coordonnées du responsable de traitement.",
+        controllerBody: "Mahouna, particulier (éditeur non professionnel, voir les mentions légales).",
         contact: "Pour toute question :",
       },
       contactPage: {
@@ -227,18 +227,19 @@ export const DICTIONARIES: Record<UiLocale, Dictionary> = {
     footerLinks: { mentionsLegales: "Legal notice", confidentialite: "Privacy", contact: "Contact" },
     legal: {
       updatedLabel: "Last updated: September 2026",
-      contactEmail: "contact@exemple.fr",
+      contactEmail: "mahounaamg@gmail.com",
       mentions: {
         title: "Legal notice",
         intro: "The Poems website is published by:",
         publisherTitle: "Site publisher",
-        editor: "Publisher name",
-        toFill: "[To be filled in]",
-        addressLabel: "postal address",
-        directorLabel: "publication director",
+        publisherName: "Mahouna",
+        addressNote:
+          "Non-professional publisher: the postal address is not published and has been provided to the host (French law no. 2004-575 of 21 June 2004, art. 6, III, 2°).",
+        directorName: "Mahouna",
         directorTitle: "Publication director",
         hostingTitle: "Hosting",
-        hostLabel: "name and address of the host",
+        hostText:
+          "The source code is published on GitHub (github.com/LoickAmg/Poem-Generator). The name of the host of the live service will be stated here once it goes into production.",
         ipTitle: "Intellectual property",
         ipBody1:
           "All content on this site (text, code) is protected by copyright. Any reproduction, even partial, without prior authorisation is prohibited.",
@@ -263,7 +264,7 @@ export const DICTIONARIES: Record<UiLocale, Dictionary> = {
         rightsBody:
           "With no data processing, no specific rights apply; for any question, please contact us.",
         controllerTitle: "Data controller",
-        controllerBody: "[To be filled in] — name and contact details of the data controller.",
+        controllerBody: "Mahouna, individual (non-professional publisher, see the legal notice).",
         contact: "For any question:",
       },
       contactPage: {

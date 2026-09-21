@@ -11,17 +11,14 @@ export default async function MentionsLegalesPage() {
     <LegalLayout title={mentions.title} updatedLabel={dict.legal.updatedLabel}>
       <LegalSection heading={mentions.publisherTitle}>
         <p>{mentions.intro}</p>
-        <p>
-          {dict.legal.mentions.toFill} — {mentions.editor}
-          <br />
-          {dict.legal.mentions.toFill} — {mentions.addressLabel}
-        </p>
+        <p>{mentions.publisherName}</p>
+        <p>{mentions.addressNote}</p>
       </LegalSection>
       <LegalSection heading={mentions.directorTitle}>
-        <p>{dict.legal.mentions.toFill} — {mentions.directorLabel}.</p>
+        <p>{mentions.directorName}</p>
       </LegalSection>
       <LegalSection heading={mentions.hostingTitle}>
-        <p>{dict.legal.mentions.toFill} — {mentions.hostLabel}.</p>
+        <p>{mentions.hostText}</p>
       </LegalSection>
       <LegalSection heading={mentions.ipTitle}>
         <p>{mentions.ipBody1}</p>

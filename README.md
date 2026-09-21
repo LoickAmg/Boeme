@@ -112,4 +112,4 @@ Couleurs déclarées comme variables CSS dans `app/globals.css` (palette papier/
 - `src/app/not-found.tsx` — page d’erreur 404 internationale, public ;
 - Liens légaux dans le footer de `src/app/layout.tsx`.
 
-Les champs organisés autour de `[À compléter]` (éditeur, adresse, directeur de publication, hébergeur, responsable de traitement) et l’adresse `contact@exemple.fr` sont à personnaliser avant mise en production.
+Éditeur, directeur de publication, responsable de traitement et contact sont renseignés dans `src/lib/i18n/dictionary.ts` (éditeur non professionnel, adresse postale non publiée). L'hébergeur du service en ligne est à indiquer dans `hostText` dès la mise en production.

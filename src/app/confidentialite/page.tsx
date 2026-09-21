@@ -20,7 +20,7 @@ export default async function ConfidentialitePage() {
       </LegalSection>
       <LegalSection heading={privacy.rightsTitle}>
         <p>{privacy.rightsBody}</p>
-        <p>{privacy.contact} <a href="mailto:contact@exemple.fr">contact@exemple.fr</a></p>
+        <p>{privacy.contact} <a href={`mailto:${dict.legal.contactEmail}`}>{dict.legal.contactEmail}</a></p>
       </LegalSection>
       <LegalSection heading={privacy.controllerTitle}>
         <p>{privacy.controllerBody}</p>
