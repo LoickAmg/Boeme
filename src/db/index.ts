@@ -3,6 +3,21 @@ import { Pool } from "pg";
 
 import * as schema from "./schema";
 
+/**
+ * Connexion en clair uniquement vers une base locale ; sinon TLS avec
+ * vérification du certificat (une connexion chiffrée sans vérification
+ * n'est pas protégée contre un intermédiaire).
+ */
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
+
+export function sslOptionFor(connectionString: string): boolean {
+  try {
+    return !LOCAL_HOSTS.has(new URL(connectionString).hostname);
+  } catch {
+    return true;
+  }
+}
+
 declare global {
   var __poemDbPool: Pool | undefined;
 }
@@ -24,9 +39,7 @@ function getPool(): Pool {
     global.__poemDbPool = new Pool({
       connectionString: process.env.DATABASE_URL,
       max: 5,
-      ssl: process.env.DATABASE_URL.includes("localhost")
-        ? false
-        : { rejectUnauthorized: false },
+      ssl: sslOptionFor(process.env.DATABASE_URL),
     });
   }
 

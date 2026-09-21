@@ -65,7 +65,7 @@ async function main() {
   const sql = readFileSync(sqlPath, "utf8");
   const client = new Client({
     connectionString,
-    ssl: connectionString.includes("localhost") ? false : { rejectUnauthorized: false },
+    ssl: !["localhost", "127.0.0.1", "[::1]"].includes(new URL(connectionString).hostname),
   });
 
   await client.connect();

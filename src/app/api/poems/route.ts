@@ -2,13 +2,35 @@ import { NextResponse } from "next/server";
 
 import { getDb } from "@/db";
 import { poems } from "@/db/schema";
-import { getRecentPoems } from "@/db/queries";
+import { countPoemsSince, getRecentPoems } from "@/db/queries";
+import { clientIpFrom } from "@/lib/clientIp";
+import {
+  DEFAULT_GLOBAL_HOURLY_LIMIT,
+  GENERATION_LIMIT_PER_IP,
+  GENERATION_WINDOW_MS,
+} from "@/lib/constants";
+import { createRateLimiter } from "@/lib/rateLimit";
 import { parsePaginationLimit, parsePaginationOffset } from "@/lib/pagination";
 import { generatePoem } from "@/lib/poetry";
 import { parseGeneratePoemInput } from "@/lib/poetry/validate";
 
 const DEFAULT_LIMIT = 12;
 const MAX_LIMIT = 50;
+const HOUR_MS = 60 * 60 * 1000;
+
+const perIpLimiter = createRateLimiter({ windowMs: GENERATION_WINDOW_MS, max: GENERATION_LIMIT_PER_IP });
+
+function globalHourlyLimit(): number {
+  const configured = Number.parseInt(process.env.POEM_GLOBAL_HOURLY_LIMIT ?? "", 10);
+  return Number.isFinite(configured) && configured > 0 ? configured : DEFAULT_GLOBAL_HOURLY_LIMIT;
+}
+
+function tooManyRequests(message: string, retryAfterSeconds: number) {
+  return NextResponse.json(
+    { error: message },
+    { status: 429, headers: { "Retry-After": String(retryAfterSeconds) } },
+  );
+}
 
 /** GET /api/poems?limit=12&offset=0 — liste paginée pour la galerie, la plus récente en premier. */
 export async function GET(request: Request) {
@@ -45,7 +67,19 @@ export async function POST(request: Request) {
     );
   }
 
+  const ipCheck = perIpLimiter(clientIpFrom(request.headers));
+  if (!ipCheck.allowed) {
+    return tooManyRequests(
+      "Trop de poèmes générés depuis cette adresse. Réessaie dans quelques minutes.",
+      ipCheck.retryAfterSeconds,
+    );
+  }
+
   try {
+    if ((await countPoemsSince(new Date(Date.now() - HOUR_MS))) >= globalHourlyLimit()) {
+      return tooManyRequests("La galerie a atteint son quota de poèmes pour cette heure. Reviens plus tard.", 600);
+    }
+
     const generated = await generatePoem(input);
     const db = getDb();
     const [saved] = await db

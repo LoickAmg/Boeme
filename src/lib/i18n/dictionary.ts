@@ -151,13 +151,13 @@ export const DICTIONARIES: Record<UiLocale, Dictionary> = {
         title: "Politique de confidentialité (RGPD)",
         introTitle: "Traitement des données",
         introBody:
-          "Le service ne collecte aucune donnée personnelle : pas de compte, pas de cookie de suivi, pas d'outil d'analyse tiers.",
+          "Le service ne stocke aucune donnée personnelle : pas de compte, pas de cookie de suivi, pas d'outil d'analyse tiers. Seule l'adresse IP du visiteur est lue, en mémoire, pour limiter les abus.",
         legalBaseTitle: "Base légale",
         legalBaseBody:
-          "Aucun traitement de données personnelles n'est réalisé par ce site. Les poèmes soumis à la galerie doivent être considérés comme publics.",
+          "L'adresse IP est utilisée sur la base de l'intérêt légitime de l'éditeur : empêcher qu'un script génère des poèmes en masse. Aucun autre traitement de données personnelles n'est réalisé. Les poèmes soumis à la galerie doivent être considérés comme publics.",
         retentionTitle: "Durée de conservation",
         retentionBody:
-          "Sans données personnelles collectées, aucune durée de conservation ne s'applique.",
+          "L'adresse IP n'est jamais enregistrée en base : elle reste en mémoire du serveur 10 minutes au plus, puis disparaît.",
         rightsTitle: "Vos droits",
         rightsBody:
           "En l'absence de traitement de données, aucun droit particulier ne s'exerce ; pour toute question, contactez-nous.",
@@ -252,13 +252,13 @@ export const DICTIONARIES: Record<UiLocale, Dictionary> = {
         title: "Privacy policy (GDPR)",
         introTitle: "Data processing",
         introBody:
-          "This service collects no personal data: no account, no tracking cookie, no third-party analytics.",
+          "This service stores no personal data: no account, no tracking cookie, no third-party analytics. Only the visitor's IP address is read, in memory, to limit abuse.",
         legalBaseTitle: "Legal basis",
         legalBaseBody:
-          "No personal data is processed by this site. Poems submitted to the gallery must be considered public.",
+          "The IP address is used on the basis of the publisher's legitimate interest: preventing scripts from generating poems in bulk. No other personal data is processed. Poems submitted to the gallery must be considered public.",
         retentionTitle: "Retention period",
         retentionBody:
-          "With no personal data collected, no retention period applies.",
+          "The IP address is never written to the database: it stays in server memory for 10 minutes at most, then disappears.",
         rightsTitle: "Your rights",
         rightsBody:
           "With no data processing, no specific rights apply; for any question, please contact us.",
