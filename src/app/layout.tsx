@@ -18,6 +18,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import { getUiLocale } from "@/lib/i18n/server";
+import { siteUrl } from "@/lib/site";
 
 import "./globals.css";
 
@@ -25,8 +26,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getUiLocale();
   const dict = getDictionary(locale);
   return {
+    metadataBase: new URL(siteUrl()),
     title: dict.metaTitle,
     description: dict.metaDescription,
+    openGraph: { type: "website", title: dict.metaTitle, description: dict.metaDescription, locale },
+    twitter: { card: "summary", title: dict.metaTitle, description: dict.metaDescription },
   };
 }
 

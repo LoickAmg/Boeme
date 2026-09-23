@@ -36,7 +36,7 @@ export function SiteHeader() {
                 aria-pressed={locale === id}
                 className={`rounded-full px-2.5 py-1 uppercase tracking-wide transition-colors ${
                   locale === id
-                    ? "bg-rose text-ivory"
+                    ? "bg-rose text-ink"
                     : "text-ink-soft hover:text-ink"
                 }`}
               >

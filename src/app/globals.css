@@ -13,10 +13,10 @@
   --color-linen-deep: #ddccae;
   --color-rose: #c9a4a1;
   --color-rose-soft: #ddc0bd;
-  --color-rose-deep: #ad817d;
+  --color-rose-deep: #7f5551;
   --color-ink: #3a332d;
-  --color-ink-soft: #79706a;
-  --color-ink-faint: #a89e97;
+  --color-ink-soft: #675e58;
+  --color-ink-faint: #6f665f;
 }
 
 @theme inline {

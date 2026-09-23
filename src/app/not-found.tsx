@@ -13,7 +13,7 @@ export default async function GlobalNotFound() {
       <p className="max-w-xl text-sm text-ink-soft">{dict.notFound.body}</p>
       <Link
         href="/"
-        className="mt-4 rounded-full bg-rose px-6 py-2.5 text-sm font-medium text-ivory transition-opacity hover:opacity-90"
+        className="mt-4 rounded-full bg-rose px-6 py-2.5 text-sm font-medium text-ink transition-opacity hover:opacity-90"
       >
         {dict.notFound.back}
       </Link>

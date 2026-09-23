@@ -35,7 +35,7 @@ function OptionPill({
       aria-pressed={active}
       className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
         active
-          ? "border-rose bg-rose text-ivory"
+          ? "border-rose bg-rose text-ink"
           : "border-linen-deep bg-ivory-soft text-ink-soft hover:border-rose hover:text-ink"
       }`}
     >
