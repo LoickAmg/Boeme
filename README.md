@@ -1,115 +1,56 @@
-# Poèmes — générateur de poésie
+# Boème
 
-Un générateur de poèmes chic, simple et cosy : on choisit une langue, un
-thème, une structure et une longueur, et le poème s'écrit tout seul. Chaque
-poème généré rejoint une galerie publique, partagée avec tout le monde,
-sans compte ni connexion.
+Lire, écrire et partager de la poésie.
+
+- **Bibliothèque** : des poèmes du domaine public (Charles d'Orléans, Ronsard, Du Bellay, La Fontaine, Lamartine, Hugo, Nerval, Baudelaire, Verlaine, Rimbaud, Apollinaire…), chacun avec son recueil, son année, son thème et un lien vers sa source (Wikisource). Les poèmes encore protégés ne sont pas reproduits : seulement leur titre, leur auteur et un lien.
+- **Écrire** : comptes, éditeur, brouillons privés, publication, modification, suppression.
+- **Communauté** : flux des poèmes publiés par les membres, favoris, pages de membres.
+- **Modération légère** : signalement par les lecteurs ; un poème de membre est masqué à partir de 3 signalements de lecteurs différents, puis un administrateur le rétablit ou le supprime.
+- **Générateur** : une proposition de premier jet (langue, ambiance, structure, longueur), à retravailler dans l'éditeur. Il n'écrit en base que si le membre choisit de garder le poème.
 
 ## Stack
 
-- **Next.js 16** (App Router) + TypeScript, Tailwind CSS v4
-- **Drizzle ORM** + Postgres (`pg`), migration écrite à la main (pas de CLI
-  externe requise — voir plus bas)
-- Polices auto-hébergées via `@fontsource` (Cormorant Garamond pour les
-  poèmes, Manrope pour l'interface) : aucun appel à Google Fonts, ni au
-  build, ni à l'exécution
-- **Vitest** pour les tests
+Next.js 16 (App Router, Server Actions), TypeScript strict, Postgres avec Drizzle (Neon en production, PGlite embarqué en local et en test), Zod, Tailwind CSS v4, polices auto-hébergées (Cormorant Garamond, Manrope). Tests Vitest sur un **vrai Postgres en mémoire**.
 
-## Le générateur
-
-Deux moteurs, avec un ordre de priorité clair :
-
-1. **Générateur maison** (par défaut, toujours actif) — recombine des vers
-   écrits à la main, par thème et par langue, plutôt que de générer du
-   texte "de zéro" (une approche façon Oulipo/cut-up). Garantit une
-   qualité et une correction grammaticale constantes, sans dépendance
-   externe ni coût, quel que soit l'environnement de déploiement.
-2. **API LLM** (optionnelle) — si une clé est configurée (`POEM_LLM_API_KEY`),
-   elle est utilisée en priorité, avec repli automatique et silencieux sur
-   le générateur maison en cas d'échec (clé invalide, quota, timeout,
-   réseau). La génération ne casse donc jamais, avec ou sans clé.
-
-Le thème envoyé au modèle (LLM) vient toujours d'une liste prédéfinie de 5
-ambiances, jamais d'un texte libre saisi par un visiteur — la galerie étant
-publique et sans modération manuelle, c'est ce qui évite toute surface
-d'abus côté prompt.
-
-## Installation
+## Démarrer en local
 
 ```bash
 npm install
-cp .env.example .env
-# renseigner DATABASE_URL dans .env (Postgres local ou distant)
-npm run db:migrate
-npm run dev
+npm run dev        # http://localhost:3000
 ```
 
-Ouvrir [http://localhost:3000](http://localhost:3000).
+Sans `DATABASE_URL`, une base embarquée est créée dans `.pglite/`, migrée et garnie de la bibliothèque au premier accès. Pour tester la modération, créez `.env.local` avec `ADMIN_EMAIL=vous@exemple.test` puis inscrivez-vous avec cette adresse : le compte devient administrateur (une seule fois, atomiquement).
 
-### Variables d'environnement
+Autres commandes : `npm test`, `npm run lint`, `npm run typecheck`, `npm run db:generate` (après un changement de `src/db/schema.ts`).
 
-Voir `.env.example` pour la liste complète. En résumé :
+## Déployer sur Vercel (gratuit)
 
-| Variable | Requise | Description |
-| --- | --- | --- |
-| `DATABASE_URL` | oui | Connexion Postgres (locale en dev, fournie par Vercel/Neon en prod) |
-| `POEM_LLM_API_KEY` | non | Active le moteur LLM si présente |
-| `POEM_LLM_API_URL` | non | API compatible "chat completions" (défaut : OpenAI) |
-| `POEM_LLM_MODEL` | non | Modèle à utiliser (défaut : `gpt-4o-mini`) |
+1. **Base de données** : projet [Neon](https://neon.tech) gratuit, ou intégration Neon depuis le tableau de bord Vercel (elle renseigne `DATABASE_URL`).
+2. **Projet** : importez le dépôt dans Vercel. `vercel-build` applique les migrations, charge la bibliothèque si elle est absente (idempotent), puis construit le site.
+3. **Variables d'environnement** obligatoires en production, sans quoi le build échoue volontairement : `DATABASE_URL`, `APP_SECRET` (32 caractères aléatoires au moins), `ADMIN_EMAIL`. Voir `.env.example`.
 
-## Tests, lint, build
+## La bibliothèque
 
-```bash
-npm test      # Vitest — générateur, validation, pagination, LLM/fallback
-npm run lint  # ESLint
-npm run build # build de production (ne nécessite pas DATABASE_URL)
-```
+`data/classics.json` est produit par `npm run corpus:fetch` à partir de la liste éditoriale `scripts/classics-list.mjs` : le script interroge l'API de Wikisource, extrait le texte des poèmes, et vérifie les liens des références. **Le fichier se relit avant d'être versionné** (`node scripts/check-classics.mjs` affiche des échantillons et les anomalies). Pour ajouter un poème, ajoutez une ligne à la liste, relancez le script, relisez, puis redéployez : le chargement en base est idempotent (une entrée déjà présente n'est pas modifiée).
 
-Les pages d'accueil et de galerie sont rendues dynamiquement (`export const
-dynamic = "force-dynamic"`) : le build ne dépend jamais d'une base de
-données accessible au moment de la compilation.
+Ne sont retenus que des auteurs morts depuis plus de 70 ans. Les textes viennent de Wikisource (domaine public) ; leur mise en page éditoriale est sous licence CC BY-SA, d'où le lien de source conservé sur chaque poème.
 
-## Base de données
+Limites connues : quelques poèmes de Wikisource perdent leurs sauts de strophe ou leurs retraits (la mise en forme du wikitexte n'est pas toujours reprise) ; la bibliothèque est francophone.
 
-Le schéma (`src/db/schema.ts`) et la migration SQL (`drizzle/0000_init.sql`)
-sont écrits à la main plutôt que générés par un CLI (`drizzle-kit`, Prisma) :
-le schéma est trivial (une seule table), et cela évite une dépendance
-supplémentaire au build. La migration est idempotente
-(`CREATE TABLE ... IF NOT EXISTS`) et s'applique avec :
+## Sécurité et confidentialité
 
-```bash
-DATABASE_URL=postgresql://... npm run db:migrate
-```
+- Mots de passe hachés en `scrypt`, sessions à jeton haché, un seul cookie de session, aucun traceur.
+- Limitation de débit atomique en base (connexion, inscription, publication, signalement, génération), par empreinte salée de l'adresse IP : l'IP n'est jamais stockée.
+- Actions de modération revérifiées côté serveur (`requireAdmin`), pas seulement masquées.
+- Un membre ne peut modifier ou supprimer que ses propres poèmes ; les poèmes de la bibliothèque sont intouchables, même signalés.
+- Droit à l'effacement en libre-service : la suppression du compte efface le compte, les poèmes, les brouillons, les favoris et les sessions.
+- L'e-mail n'apparaît jamais publiquement ; seul le nom d'auteur est affiché.
+- Pages légales : mentions légales, confidentialité, charte de publication, contact. L'identité de l'éditeur vient de `SITE_PUBLISHER` et `CONTACT_EMAIL` (valeurs par défaut de l'éditeur actuel).
 
-## Architecture et décisions
+## Générateur
 
-L’interface et les routes serveur vivent dans l’App Router Next.js. Le générateur maison est le chemin nominal : il permet une démonstration locale déterministe, sans clé API, sans quota et sans dépendance à un fournisseur externe. Le moteur LLM est une extension optionnelle, appelée uniquement côté serveur lorsque `POEM_LLM_API_KEY` est configurée ; cette séparation évite d’exposer la clé au navigateur et garantit un repli fonctionnel lorsque le fournisseur est indisponible.
+Deux moteurs : un générateur maison qui recombine des vers écrits à la main (toujours actif, sans dépendance), et une API LLM optionnelle (`POEM_LLM_API_KEY`) avec repli automatique sur le maison. Le thème envoyé au modèle vient toujours d'une liste prédéfinie, jamais d'un texte libre.
 
-Le catalogue public stocke les poèmes générés afin de former une galerie partagée. Il faut donc considérer tout texte envoyé à la galerie comme public et ne jamais y placer de donnée personnelle, de secret ou de contenu confidentiel. Les thèmes sont sélectionnés dans une liste contrôlée ; cela réduit les abus de prompt mais ne constitue pas une modération complète.
+## Licence
 
-## Coût, confidentialité et limites
-
-Le générateur maison n’occasionne aucun appel externe. Le mode LLM peut générer des coûts, dépend des quotas et transmet le prompt au fournisseur configuré selon ses propres conditions. En production, renseigner les variables uniquement côté serveur, limiter les quotas par utilisateur ou par adresse IP, journaliser les erreurs sans enregistrer les clés et ajouter une modération avant publication si la galerie est ouverte au public.
-
-Le projet est un **prototype démonstratif**, et non un service de génération audité. La qualité stylistique dépend du corpus embarqué ou du modèle choisi ; aucune métrique de qualité littéraire n’est prétendue. La base Postgres est nécessaire pour la galerie en production, tandis que le build reste indépendant de la disponibilité de la base.
-
-## Démonstration reproductible
-
-Pour une démonstration sans clé LLM, laisser `POEM_LLM_API_KEY` vide, appliquer la migration et générer plusieurs poèmes avec les mêmes langue, thème, structure et longueur. Le moteur maison permet de vérifier le comportement sans réseau ni quota. Pour tester le fallback, configurer volontairement une URL LLM indisponible et vérifier que la requête revient au moteur maison sans exposer l’erreur interne à l’utilisateur.
-
-## Identité visuelle
-
-Typographie auto-hébergée via `@fontsource` (aucun Google Fonts, aucun appel réseau) :
-
-- **Cormorant Garamond** (`--font-serif`) pour les titres et le ton éditorial poétique ;
-- **Manrope** (`--font-sans`) pour le corps de texte et l’interface.
-
-Couleurs déclarées comme variables CSS dans `app/globals.css` (palette papier/encre/rose, `linen`, `ivory`, `ink`, `rose`) — aucun code hex en dur dans les composants. Pas de motif « dot grid » ni dégradé générique en fond.
-
-## Pages légales et erreurs
-
-- `src/app/mentions-legales/`, `src/app/confidentialite/`, `src/app/contact/` — pages publiques, contenus bilingues (fr/en) via `src/lib/i18n/dictionary.ts` ;
-- `src/app/not-found.tsx` — page d’erreur 404 internationale, public ;
-- Liens légaux dans le footer de `src/app/layout.tsx`.
-
-Éditeur, directeur de publication, responsable de traitement et contact sont renseignés dans `src/lib/i18n/dictionary.ts` (éditeur non professionnel, adresse postale non publiée). L'hébergeur du service en ligne est à indiquer dans `hostText` dès la mise en production.
+MIT (code). Les textes de la bibliothèque relèvent du domaine public ; voir plus haut pour Wikisource.

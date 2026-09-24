@@ -1,8 +1,6 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import type { Metadata, Viewport } from "next";
 
-// Polices auto-hébergées via @fontsource (fichiers embarqués dans le
-// bundle, aucun appel réseau vers Google Fonts — ni au build, ni au runtime).
+// Polices auto-hébergées via @fontsource : aucun appel réseau vers Google Fonts, ni au build, ni à l'exécution.
 import "@fontsource/cormorant-garamond/400.css";
 import "@fontsource/cormorant-garamond/500.css";
 import "@fontsource/cormorant-garamond/600.css";
@@ -14,45 +12,34 @@ import "@fontsource/manrope/500.css";
 import "@fontsource/manrope/600.css";
 import "@fontsource/manrope/700.css";
 
+import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getDictionary } from "@/lib/i18n/dictionary";
-import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
-import { getUiLocale } from "@/lib/i18n/server";
-import { siteUrl } from "@/lib/site";
+import { site, siteUrl } from "@/config/site";
+import { getCurrentUser } from "@/server/context";
 
 import "./globals.css";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getUiLocale();
-  const dict = getDictionary(locale);
-  return {
-    metadataBase: new URL(siteUrl()),
-    title: dict.metaTitle,
-    description: dict.metaDescription,
-    openGraph: { type: "website", title: dict.metaTitle, description: dict.metaDescription, locale },
-    twitter: { card: "summary", title: dict.metaTitle, description: dict.metaDescription },
-  };
-}
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
+  title: { default: `${site.name} — poésie à lire, à écrire, à partager`, template: `%s — ${site.name}` },
+  description: site.description,
+  openGraph: { type: "website", siteName: site.name, locale: "fr_FR", title: site.name, description: site.description },
+  twitter: { card: "summary", title: site.name, description: site.description },
+};
+
+export const viewport: Viewport = { themeColor: "#f8f3ec" };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const locale = await getUiLocale();
-  const dict = getDictionary(locale);
+  const user = await getCurrentUser();
 
   return (
-    <html lang={locale} className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-ivory font-sans text-ink">
-        <LocaleProvider initialLocale={locale}>
-          <SiteHeader />
-          <div className="flex flex-1 flex-col">{children}</div>
-          <footer className="border-t border-linen-deep/60 px-6 py-6 text-center text-xs text-ink-faint sm:px-8">
-            <p className="mb-3">{dict.footer}</p>
-            <nav className="flex items-center justify-center gap-6" aria-label="Liens légaux">
-              <Link href="/mentions-legales/">{dict.footerLinks.mentionsLegales}</Link>
-              <Link href="/confidentialite/">{dict.footerLinks.confidentialite}</Link>
-              <Link href="/contact/">{dict.footerLinks.contact}</Link>
-            </nav>
-          </footer>
-        </LocaleProvider>
+    <html lang="fr" className="h-full antialiased">
+      <body className="flex min-h-full flex-col bg-ivory font-sans text-ink">
+        <SiteHeader user={user} />
+        <main id="contenu" className="flex flex-1 flex-col">
+          {children}
+        </main>
+        <SiteFooter />
       </body>
     </html>
   );

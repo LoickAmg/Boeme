@@ -10,7 +10,7 @@ export function LegalLayout({
   children: ReactNode;
 }) {
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-12 sm:px-8 sm:py-16">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-12 sm:px-8 sm:py-16">
       <section className="flex flex-col gap-2">
         <h1 className="font-serif text-4xl italic text-ink sm:text-5xl">{title}</h1>
         <p className="text-xs text-ink-faint">{updatedLabel}</p>
@@ -18,7 +18,7 @@ export function LegalLayout({
       <div className="flex flex-col gap-6 text-sm leading-relaxed text-ink-soft sm:text-base">
         {children}
       </div>
-    </main>
+    </div>
   );
 }
 

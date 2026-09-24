@@ -1,23 +1,24 @@
+import type { Metadata } from "next";
+
 import { LegalLayout, LegalSection } from "@/components/LegalPage";
-import { getDictionary } from "@/lib/i18n/dictionary";
-import { getUiLocale } from "@/lib/i18n/server";
+import { site } from "@/config/site";
 
-export default async function ContactPage() {
-  const locale = await getUiLocale();
-  const dict = getDictionary(locale);
-  const { contactPage } = dict.legal;
+export const metadata: Metadata = { title: "Contact" };
 
+export default function ContactPage() {
   return (
-    <LegalLayout title={contactPage.title} updatedLabel={dict.legal.updatedLabel}>
-      <LegalSection heading={contactPage.emailTitle}>
-        <p>{contactPage.intro}</p>
+    <LegalLayout title="Contact" updatedLabel="Dernière mise à jour : septembre 2026">
+      <LegalSection heading="Écrire à l'éditeur">
+        <p>Une question, une remarque, une suggestion ? Écrivez à l&apos;adresse suivante :</p>
         <p>
-          <a href={`mailto:${dict.legal.contactEmail}`}>{dict.legal.contactEmail}</a>
+          <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
         </p>
-        <p>{contactPage.emailBody}</p>
+        <p>Nous répondons généralement sous quelques jours ouvrés.</p>
       </LegalSection>
-      <LegalSection heading={contactPage.title}>
-        <p>{dict.legal.mentions.publisherName}</p>
+      <LegalSection heading="Signaler un contenu">
+        <p>
+          Pour un poème qui enfreint la <a href="/charte">charte de publication</a>, utilisez le bouton « Signaler ce poème » sur sa page (compte requis), ou écrivez-nous en indiquant l&apos;adresse du poème et le motif.
+        </p>
       </LegalSection>
     </LegalLayout>
   );

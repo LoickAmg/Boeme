@@ -1,49 +1,63 @@
-"use client";
-
 import Link from "next/link";
 
-import { useLocale } from "@/lib/i18n/LocaleProvider";
-import { UI_LOCALES } from "@/lib/i18n/locale";
+import { logoutAction } from "@/app/actions/auth";
+import { site } from "@/config/site";
+import type { User } from "@/db/schema";
 
-export function SiteHeader() {
-  const { locale, dict, setLocale } = useLocale();
+const NAV = [
+  { href: "/bibliotheque", label: "Bibliothèque" },
+  { href: "/poetes", label: "Poètes" },
+  { href: "/communaute", label: "Communauté" },
+  { href: "/generateur", label: "Générateur" },
+];
 
+export function SiteHeader({ user }: { user: User | null }) {
   return (
     <header className="border-b border-linen-deep/60">
-      <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 px-6 py-6 sm:px-8">
-        <Link href="/" className="font-serif text-2xl tracking-wide text-ink">
-          {dict.nav.brand}
+      <a
+        href="#contenu"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-ivory"
+      >
+        Aller au contenu
+      </a>
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-8 gap-y-3 px-6 py-5 sm:px-8">
+        <Link href="/" className="font-serif text-3xl italic tracking-wide text-ink">
+          {site.name}
         </Link>
-        <div className="flex items-center gap-6">
-          <nav className="flex items-center gap-6 text-sm font-medium text-ink-soft">
-            <Link href="/" className="transition-colors hover:text-ink">
-              {dict.nav.generator}
+
+        <nav aria-label="Navigation principale" className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-ink-soft">
+          {NAV.map((item) => (
+            <Link key={item.href} href={item.href} className="transition-colors hover:text-ink">
+              {item.label}
             </Link>
-            <Link href="/galerie" className="transition-colors hover:text-ink">
-              {dict.nav.gallery}
+          ))}
+        </nav>
+
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+          <Link href="/ecrire" className="rounded-full bg-rose px-4 py-2 font-semibold text-ink transition-colors hover:bg-rose-soft">
+            Écrire
+          </Link>
+          {user ? (
+            <>
+              {user.role === "admin" && (
+                <Link href="/admin/moderation" className="font-medium text-ink-soft transition-colors hover:text-ink">
+                  Modération
+                </Link>
+              )}
+              <Link href="/compte" className="font-medium text-ink-soft transition-colors hover:text-ink">
+                {user.name}
+              </Link>
+              <form action={logoutAction}>
+                <button type="submit" className="font-medium text-ink-soft underline-offset-4 transition-colors hover:text-ink hover:underline">
+                  Déconnexion
+                </button>
+              </form>
+            </>
+          ) : (
+            <Link href="/compte/connexion" className="font-medium text-ink-soft transition-colors hover:text-ink">
+              Connexion
             </Link>
-          </nav>
-          <div
-            className="flex items-center gap-1 rounded-full border border-linen-deep bg-ivory-soft p-1 text-xs font-semibold"
-            role="group"
-            aria-label="Langue de l'interface / Interface language"
-          >
-            {UI_LOCALES.map((id) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setLocale(id)}
-                aria-pressed={locale === id}
-                className={`rounded-full px-2.5 py-1 uppercase tracking-wide transition-colors ${
-                  locale === id
-                    ? "bg-rose text-ink"
-                    : "text-ink-soft hover:text-ink"
-                }`}
-              >
-                {id}
-              </button>
-            ))}
-          </div>
+          )}
         </div>
       </div>
     </header>
