@@ -1,5 +1,7 @@
 # Boème
 
+Site en ligne : <https://boeme.vercel.app>
+
 Lire, écrire et partager de la poésie.
 
 - **Bibliothèque** : des poèmes du domaine public (Charles d'Orléans, Ronsard, Du Bellay, La Fontaine, Lamartine, Hugo, Nerval, Baudelaire, Verlaine, Rimbaud, Apollinaire…), chacun avec son recueil, son année, son thème et un lien vers sa source (Wikisource). Les poèmes encore protégés ne sont pas reproduits : seulement leur titre, leur auteur et un lien.
