@@ -131,11 +131,23 @@ export function Gazette({ data, now = new Date() }: { data: GazetteData; now?: D
                 salon,
               </li>
               <li>
-                et{" "}
-                <Link href="/cadavre-exquis" className="font-semibold text-ink underline decoration-gold/60 underline-offset-4 hover:decoration-rose-deep">
-                  {plural(data.openCorpses, "cadavre exquis", "cadavres exquis")}
-                </Link>{" "}
-                qui attend{data.openCorpses > 1 ? "ent" : ""} vos vers.
+                {data.openCorpses > 0 ? (
+                  <>
+                    et{" "}
+                    <Link href="/cadavre-exquis" className="font-semibold text-ink underline decoration-gold/60 underline-offset-4 hover:decoration-rose-deep">
+                      {plural(data.openCorpses, "cadavre exquis", "cadavres exquis")}
+                    </Link>{" "}
+                    qui attend{data.openCorpses > 1 ? "ent" : ""} vos vers.
+                  </>
+                ) : (
+                  <>
+                    et pas un seul cadavre exquis en cours : qui osera{" "}
+                    <Link href="/cadavre-exquis" className="font-semibold text-ink underline decoration-gold/60 underline-offset-4 hover:decoration-rose-deep">
+                      lancer le prochain
+                    </Link>{" "}
+                    ?
+                  </>
+                )}
               </li>
             </ul>
           </Column>
