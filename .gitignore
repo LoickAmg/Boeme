@@ -43,3 +43,6 @@ next-env.d.ts
 
 # base locale embarquée
 /.pglite/
+
+# fichiers de lecture des poèmes importés, copiés depuis node_modules (scripts/copy-reader-assets.mjs)
+/public/ocr

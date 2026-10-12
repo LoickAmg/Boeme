@@ -5,8 +5,9 @@ Site en ligne : <https://boeme.vercel.app>
 Lire, écrire et partager de la poésie.
 
 - **Bibliothèque** : des poèmes du domaine public (Charles d'Orléans, Ronsard, Du Bellay, La Fontaine, Lamartine, Hugo, Nerval, Baudelaire, Verlaine, Rimbaud, Apollinaire…), chacun avec son recueil, son année, son thème et un lien vers sa source (Wikisource). Les poèmes encore protégés ne sont pas reproduits : seulement leur titre, leur auteur et un lien.
-- **Écrire** : comptes, éditeur, brouillons privés, publication, modification, suppression.
+- **Écrire** : comptes, éditeur, brouillons privés, publication, modification, suppression. **Import d'un poème déjà écrit** : photo d'un carnet, capture d'écran (reconnaissance de texte Tesseract.js en français, titre et strophes retrouvés d'après la position des lignes), ou document `.docx`, `.odt`, `.pdf`, `.txt`. Tout est lu **dans le navigateur** : rien n'est envoyé avant l'enregistrement. Les fichiers du moteur (≈ 4 Mo téléchargés une fois, seulement à la première image) sont servis par le site lui-même depuis `public/ocr`, copiés à l'installation par `scripts/copy-reader-assets.mjs` ; les données du français y sont décompressées, car certains filtres réseau bloquent les fichiers `.gz`.
 - **Communauté** : flux des poèmes publiés par les membres, favoris, pages de membres.
+- **Poèmes du jour** : chaque jour un classique et un poème de la communauté (tirage reproductible dans la journée, chaque favori donnant une chance de plus, plafonnée) ; la vedette de l'accueil alterne d'un jour à l'autre ; un administrateur peut « mettre à l'honneur » un poème de membre, programmé au premier jour libre (liste dans la modération).
 - **Modération légère** : signalement par les lecteurs ; un poème de membre est masqué à partir de 3 signalements de lecteurs différents, puis un administrateur le rétablit ou le supprime.
 - **Générateur** : une proposition de premier jet (langue, ambiance, structure, longueur), à retravailler dans l'éditeur. Il n'écrit en base que si le membre choisit de garder le poème.
 

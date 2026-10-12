@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef } from "react";
 
 import { savePoemAction } from "@/app/actions/poems";
 import type { PoemFormState } from "@/app/actions/poems";
 import { Field, inputClass } from "@/components/Field";
+import { ImportPoem } from "@/components/ImportPoem";
 import { THEMES } from "@/lib/themes";
 
 const INITIAL: PoemFormState = {};
@@ -23,6 +24,22 @@ export function PoemForm({ initial }: { initial: PoemFormValues }) {
   const [state, action, pending] = useActionState(savePoemAction, INITIAL);
   const errors = state.errors ?? {};
   const values = { ...initial, ...state.values };
+  const titleRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+
+  /** Texte importé : placé dans l'éditeur (le titre seulement s'il est encore vide). */
+  function placeImported(text: { title: string; body: string }) {
+    const body = bodyRef.current;
+    if (body) {
+      const current = body.value.trim();
+      if (current && !window.confirm("Remplacer le texte déjà saisi par le texte importé ?")) return;
+      body.value = text.body.slice(0, 6000);
+      body.focus();
+      body.setSelectionRange(0, 0);
+      body.scrollTop = 0;
+    }
+    if (text.title && titleRef.current && !titleRef.current.value.trim()) titleRef.current.value = text.title.slice(0, 120);
+  }
 
   return (
     <form action={action} className="flex flex-col gap-6" noValidate>
@@ -32,10 +49,11 @@ export function PoemForm({ initial }: { initial: PoemFormValues }) {
         </p>
       )}
       {initial.id ? <input type="hidden" name="id" value={initial.id} /> : null}
+      {!initial.id && <ImportPoem onText={placeImported} />}
       {initial.generated ? <input type="hidden" name="generated" value="1" /> : null}
 
       <Field id="title" label="Titre" error={errors.title}>
-        {(props) => <input {...props} name="title" defaultValue={values.title} maxLength={120} required className={`${inputClass} font-serif text-2xl`} />}
+        {(props) => <input {...props} ref={titleRef} name="title" defaultValue={values.title} maxLength={120} required className={`${inputClass} font-serif text-2xl`} />}
       </Field>
 
       <Field
@@ -47,6 +65,7 @@ export function PoemForm({ initial }: { initial: PoemFormValues }) {
         {(props) => (
           <textarea
             {...props}
+            ref={bodyRef}
             name="body"
             defaultValue={values.body}
             rows={16}

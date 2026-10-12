@@ -45,6 +45,12 @@ export default function PrivacyPage() {
         <p>Le générateur reçoit vos choix (langue, ambiance, structure, longueur), jamais de texte libre. Si un modèle de langage externe est activé par l&apos;éditeur, ces seuls choix lui sont transmis, sans donnée personnelle.</p>
       </LegalSection>
 
+      <LegalSection heading="Import d&apos;un poème">
+        <p>
+          Quand vous importez une photo, une capture ou un document dans « Écrire », le texte est lu sur votre appareil, par votre navigateur : l&apos;image ou le fichier n&apos;est envoyé ni à Boème ni à un tiers. Seul le texte du poème part, quand vous l&apos;enregistrez.
+        </p>
+      </LegalSection>
+
       <LegalSection heading="Conservation et suppression">
         <p>
           Vos données sont conservées tant que votre compte existe. Vous pouvez le supprimer à tout moment depuis « Mon espace » : votre compte, vos poèmes, vos brouillons, vos favoris et vos sessions sont alors effacés définitivement. Les signalements que vous avez déposés sont conservés sans lien avec votre identité.

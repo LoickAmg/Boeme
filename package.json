@@ -13,16 +13,22 @@
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
-    "corpus:fetch": "node scripts/fetch-classics.mjs"
+    "corpus:fetch": "node scripts/fetch-classics.mjs",
+    "postinstall": "node scripts/copy-reader-assets.mjs"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.3.0",
     "@fontsource/manrope": "^5.3.0",
     "@neondatabase/serverless": "^1.1.0",
+    "@tesseract.js-data/fra": "^1.0.0",
     "drizzle-orm": "^0.45.2",
+    "jszip": "^3.10.2",
+    "mammoth": "^1.13.0",
     "next": "^16.3.5",
+    "pdfjs-dist": "^6.4.299",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "tesseract.js": "^7.0.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
