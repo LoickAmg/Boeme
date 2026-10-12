@@ -97,3 +97,64 @@ body {
     animation: none;
   }
 }
+
+/* --- Poème vivant : fond d'encre qui respire, lettres qui sèchent comme de l'encre --- */
+.living {
+  background: radial-gradient(120% 80% at 50% 0%, #2b2621 0%, #1e1a17 60%, #141110 100%);
+}
+.living-glow {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background:
+    radial-gradient(35% 30% at 20% 30%, rgba(201, 164, 161, 0.22), transparent 70%),
+    radial-gradient(30% 25% at 80% 70%, rgba(221, 204, 174, 0.14), transparent 70%);
+  animation: living-drift 26s ease-in-out infinite alternate;
+}
+@keyframes living-drift {
+  to {
+    transform: translate(6%, -4%) scale(1.08);
+  }
+}
+.living-title,
+.living-author {
+  animation: fade-up 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.living-author {
+  animation-delay: 0.4s;
+}
+.living-line {
+  color: #f8f3ec;
+  transition: opacity 1.2s ease;
+}
+.living-line.done {
+  opacity: 0.55;
+}
+.ink {
+  animation: ink-in 0.9s ease-out both;
+}
+@keyframes ink-in {
+  /* Invisible jusqu'à son tour, puis une tache d'encre rose qui se resserre en lettre. */
+  from {
+    opacity: 0;
+    color: transparent;
+    text-shadow: 0 0 0.45em rgba(221, 192, 189, 0.9);
+  }
+  15% {
+    opacity: 1;
+    color: transparent;
+    text-shadow: 0 0 0.4em rgba(221, 192, 189, 0.9);
+  }
+  60% {
+    color: rgba(248, 243, 236, 0.85);
+    text-shadow: 0 0 0.12em rgba(221, 192, 189, 0.6);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .living-glow,
+  .ink,
+  .living-title,
+  .living-author {
+    animation: none;
+  }
+}

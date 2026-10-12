@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 
 import { featureAction } from "@/app/actions/admin";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { LivingPoem } from "@/components/LivingPoem";
+import { ShareCard } from "@/components/ShareCard";
 import { ReportForm } from "@/components/ReportForm";
 import { getDb } from "@/db/client";
 import { excerpt, formatDate } from "@/lib/text";
@@ -123,6 +125,8 @@ export default async function PoemPage({ params, searchParams }: PageProps<"/poe
         )}
 
         <div className="flex flex-wrap items-center gap-3">
+          {poem.body && <LivingPoem title={poem.title} author={poem.authorName} body={poem.body} lang={poem.language} />}
+          {poem.body && poem.status === "published" && <ShareCard title={poem.title} author={poem.authorName} body={poem.body} />}
           {poem.status === "published" &&
             (user ? (
               <FavoriteButton poemId={poem.id} active={favorites.has(poem.id)} count={poem.favoriteCount} returnTo={path} />
