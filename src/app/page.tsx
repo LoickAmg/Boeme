@@ -242,16 +242,18 @@ export default async function Home() {
               <p className="mt-2 max-w-sm text-sm leading-relaxed text-ivory/75">Chaque poème est une étoile, chaque thème une constellation. Promenez-vous, cliquez, lisez.</p>
               <span className="mt-4 inline-block text-sm font-semibold text-rose-soft group-hover:underline">S&apos;y perdre →</span>
             </Link>
-            <div className="rounded-[1.75rem] border border-linen-deep/60 bg-ivory-soft/60 px-7 py-8">
+            <Link href="/poeme-vivant" className="group rounded-[1.75rem] border border-linen-deep/60 bg-ivory-soft/60 px-7 py-8 transition-colors hover:border-rose">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-deep">Sur chaque poème</p>
               <h3 className="mt-2 font-serif text-3xl italic text-ink">Le poème vivant</h3>
               <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink-soft">Il s&apos;écrit sous vos yeux, comme à l&apos;encre, lu à voix haute, sur une pluie ou un feu de cheminée.</p>
-            </div>
-            <div className="rounded-[1.75rem] border border-linen-deep/60 bg-[linear-gradient(135deg,#ddc0bd,#c9a4a1)] px-7 py-8">
+              <span className="mt-4 inline-block text-sm font-semibold text-rose-deep group-hover:underline">L&apos;essayer →</span>
+            </Link>
+            <Link href="/carte-poeme" className="group rounded-[1.75rem] border border-linen-deep/60 bg-[linear-gradient(135deg,#ddc0bd,#c9a4a1)] px-7 py-8 transition-shadow hover:shadow-[0_12px_28px_rgba(58,51,45,0.14)]">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/70">Sur chaque poème</p>
               <h3 className="mt-2 font-serif text-3xl italic text-ink">La carte-poème</h3>
               <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink/80">Vos vers préférés en image, prêts pour une story Instagram, WhatsApp ou TikTok.</p>
-            </div>
+              <span className="mt-4 inline-block text-sm font-semibold text-ink group-hover:underline">Créer ma carte →</span>
+            </Link>
           </div>
         </section>
 

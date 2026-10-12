@@ -11,8 +11,16 @@ export const NAV: NavItem[] = [
   { href: "/bibliotheque", label: "Bibliothèque" },
   { href: "/poetes", label: "Poètes" },
   { href: "/communaute", label: "Communauté" },
-  { href: "/cadavre-exquis", label: "Cadavre exquis" },
-  { href: "/constellation", label: "Constellation" },
+  {
+    label: "La poésie autrement",
+    short: "Autrement",
+    children: [
+      { href: "/cadavre-exquis", label: "Cadavre exquis" },
+      { href: "/constellation", label: "Constellation" },
+      { href: "/poeme-vivant", label: "Poème vivant" },
+      { href: "/carte-poeme", label: "Carte-poème" },
+    ],
+  },
   { href: "/generateur", label: "Générateur" },
 ];
 

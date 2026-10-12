@@ -21,7 +21,7 @@ function slug(text: string) {
  * « Partager en image » : choisir ses vers, un format et un style ; l'image est dessinée
  * dans le navigateur, puis téléchargée ou envoyée directement (partage du téléphone).
  */
-export function ShareCard({ title, author, body }: { title: string; author: string; body: string }) {
+export function ShareCard({ title, author, body, label = "Partager en image" }: { title: string; author: string; body: string; label?: string }) {
   const lines = useMemo(() => body.split("\n").map((l) => l.trim()), [body]);
   // Par défaut : la première strophe (au plus 8 vers).
   const firstStanza = useMemo(() => {
@@ -110,7 +110,7 @@ export function ShareCard({ title, author, body }: { title: string; author: stri
         onClick={() => setOpen(true)}
         className="rounded-full border border-linen-deep bg-ivory-soft px-4 py-2 font-medium transition-colors hover:border-rose hover:text-ink"
       >
-        Partager en image
+        {label}
       </button>
 
       {open && (

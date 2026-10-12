@@ -301,6 +301,24 @@ export async function upcomingFeatures(db: Db, now = new Date()): Promise<{ day:
     .orderBy(asc(dailyFeatures.day));
 }
 
+/**
+ * Poèmes avec texte pour essayer le poème vivant ou la carte-poème : ceux qui correspondent à la
+ * recherche, sinon un tirage au hasard (classiques et communauté mêlés).
+ */
+export async function pickTextPoems(db: Db, options: { q?: string; limit?: number } = {}): Promise<PoemView[]> {
+  const limit = Math.min(Math.max(options.limit ?? 9, 1), 30);
+  const conditions: SQL[] = [eq(poems.status, "published"), ne(poems.origin, "reference")];
+  const needle = normalizeForSearch(options.q ?? "").trim();
+  if (needle) conditions.push(ilike(poems.searchText, `%${escapeLike(needle)}%`));
+  return db
+    .select(viewColumns)
+    .from(poems)
+    .leftJoin(authors, eq(poems.authorId, authors.id))
+    .where(and(...conditions))
+    .orderBy(needle ? desc(favoriteCount) : sql`random()`)
+    .limit(limit);
+}
+
 /** Étoile de la constellation : un poème publié avec texte (classique ou de membre). */
 export interface StarPoem {
   id: number;

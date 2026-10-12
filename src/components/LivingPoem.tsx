@@ -20,7 +20,7 @@ function frenchVoice(): SpeechSynthesisVoice | undefined {
  * « Poème vivant » : le poème s'écrit à l'écran vers après vers, comme à l'encre, lu à voix
  * haute si on le souhaite, sur une ambiance sonore au choix. Plein écran, Échap pour sortir.
  */
-export function LivingPoem({ title, author, body, lang = "fr" }: { title: string; author: string; body: string; lang?: string }) {
+export function LivingPoem({ title, author, body, lang = "fr", label = "✦ Poème vivant" }: { title: string; author: string; body: string; lang?: string; label?: string }) {
   const lines = useMemo(() => body.split("\n").map((l) => l.trim()), [body]);
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState(0); // vers déjà apparus (le dernier est en cours d'écriture)
@@ -136,7 +136,7 @@ export function LivingPoem({ title, author, body, lang = "fr" }: { title: string
   return (
     <>
       <button type="button" onClick={start} className="rounded-full bg-ink px-4 py-2 font-semibold text-ivory transition-colors hover:bg-rose-deep">
-        ✦ Poème vivant
+        {label}
       </button>
 
       {open && (
