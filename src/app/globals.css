@@ -93,7 +93,7 @@ body {
   animation: twinkle 4.5s ease-in-out infinite;
 }
 .fade-up {
-  animation: fade-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: fade-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .sheet,
@@ -123,7 +123,7 @@ body {
 }
 .living-title,
 .living-author {
-  animation: fade-up 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: fade-up 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 }
 .living-author {
   animation-delay: 0.4s;
@@ -170,7 +170,7 @@ body {
     scroll-behavior: smooth;
   }
   .page-enter {
-    animation: page-enter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation: page-enter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
   }
 }
 @keyframes page-enter {

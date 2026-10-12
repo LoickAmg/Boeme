@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { Overlay } from "@/components/Overlay";
 import { CARD_FORMATS, CARD_STYLES, cardBlob, drawCard, loadCardFonts } from "@/lib/shareCard";
 import type { CardFormat, CardStyle } from "@/lib/shareCard";
 
@@ -114,17 +115,25 @@ export function ShareCard({ title, author, body, label = "Partager en image" }: 
       </button>
 
       {open && (
+        <Overlay onClose={() => setOpen(false)}>
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-3 backdrop-blur-sm" onMouseDown={(e) => e.target === e.currentTarget && setOpen(false)}>
           <div role="dialog" aria-modal="true" aria-label="Partager en image" className="flex max-h-full w-full max-w-5xl flex-col gap-5 overflow-y-auto rounded-3xl bg-ivory p-5 shadow-2xl sm:p-7 md:flex-row">
+            {/* Sur téléphone : titre et bouton de fermeture toujours visibles en haut. */}
+            <div className="sticky -top-5 z-10 -mx-5 -mt-5 flex items-center justify-between gap-3 border-b border-linen-deep/60 bg-ivory/95 px-5 py-3 backdrop-blur md:hidden">
+              <p className="font-serif text-2xl italic text-ink">Partager en image</p>
+              <button type="button" onClick={() => setOpen(false)} aria-label="Fermer" className="rounded-full border border-linen-deep px-3 py-1 text-sm font-semibold text-ink">
+                Fermer
+              </button>
+            </div>
             <div className="flex flex-1 items-start justify-center rounded-2xl bg-linen/50 p-4">
               <canvas
                 ref={canvas}
                 aria-label="Aperçu de l'image"
-                className="h-auto max-h-[60vh] w-auto max-w-full rounded-lg shadow-[0_12px_30px_rgba(58,51,45,0.2)] md:max-h-[72vh]"
+                className="h-auto max-h-[48vh] w-auto max-w-full rounded-lg shadow-[0_12px_30px_rgba(58,51,45,0.2)] md:max-h-[72vh]"
               />
             </div>
             <div className="flex w-full flex-col gap-5 md:w-80">
-              <div className="flex items-start justify-between gap-3">
+              <div className="hidden items-start justify-between gap-3 md:flex">
                 <h2 className="font-serif text-3xl italic text-ink">Partager en image</h2>
                 <button type="button" onClick={() => setOpen(false)} aria-label="Fermer" className="rounded-full px-3 py-1 text-xl text-ink-soft hover:bg-linen">
                   ×
@@ -202,6 +211,7 @@ export function ShareCard({ title, author, body, label = "Partager en image" }: 
             </div>
           </div>
         </div>
+        </Overlay>
       )}
     </>
   );

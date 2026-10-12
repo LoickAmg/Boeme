@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { Overlay } from "@/components/Overlay";
 import { AMBIENCES, startAmbience } from "@/lib/ambience";
 import type { Ambience } from "@/lib/ambience";
 
@@ -140,6 +141,7 @@ export function LivingPoem({ title, author, body, lang = "fr", label = "✦ Poè
       </button>
 
       {open && (
+        <Overlay onClose={close}>
         <div role="dialog" aria-modal="true" aria-label={`Poème vivant : ${title}`} className="living fixed inset-0 z-50 flex flex-col text-ivory">
           <div aria-hidden className="living-glow" />
           <div className="relative flex items-center justify-between gap-3 px-5 py-4 sm:px-8">
@@ -214,6 +216,7 @@ export function LivingPoem({ title, author, body, lang = "fr", label = "✦ Poè
             )}
           </div>
         </div>
+        </Overlay>
       )}
     </>
   );
