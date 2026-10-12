@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Fichiers tiers minifiés copiés à l'installation (scripts/copy-reader-assets.mjs).
+    "public/ocr/**",
   ]),
 ]);
 
