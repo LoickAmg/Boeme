@@ -7,6 +7,7 @@ import { FavoriteButton, FavoriteLoginLink } from "@/components/FavoriteButton";
 import { LivingPoem } from "@/components/LivingPoem";
 import { ProvenanceBadge, readsLabel, sourceName } from "@/components/Provenance";
 import { ReadTracker } from "@/components/ReadTracker";
+import { WaxSeal } from "@/components/regency/WaxSeal";
 import { ShareCard } from "@/components/ShareCard";
 import { ReportForm } from "@/components/ReportForm";
 import { getDb } from "@/db/client";
@@ -55,9 +56,12 @@ export default async function PoemPage({ params, searchParams }: PageProps<"/poe
   return (
     <article className="mx-auto w-full max-w-3xl px-6 py-12 sm:px-8 sm:py-16">
       {query.publie && (
-        <p role="status" className="mb-8 rounded-xl border border-rose bg-rose-soft/40 px-4 py-3 text-sm text-ink">
-          Votre poème est publié. Merci de le partager.
-        </p>
+        <div role="status" className="mb-8 flex items-center gap-4 rounded-xl border border-rose bg-rose-soft/40 px-4 py-3 text-sm text-ink">
+          <WaxSeal size={48} />
+          <p>
+            <strong className="font-semibold">Votre poème est publié</strong> — scellé et remis aux lecteurs de Boème. Merci de le partager.
+          </p>
+        </div>
       )}
       {poem.status === "draft" && (
         <p role="status" className="mb-8 rounded-xl border border-linen-deep bg-linen/50 px-4 py-3 text-sm text-ink">

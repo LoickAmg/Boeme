@@ -4,11 +4,15 @@ import { PoemCard } from "@/components/PoemCard";
 import { ProvenanceBadge } from "@/components/Provenance";
 import { SheetDeck } from "@/components/home/SheetDeck";
 import { ThemeIcon } from "@/components/home/ThemeIcon";
+import { Gazette } from "@/components/regency/Gazette";
+import { Ornament } from "@/components/regency/Ornament";
+import { WaxSeal } from "@/components/regency/WaxSeal";
 import { Wordmark } from "@/components/home/Wordmark";
 import { getDb } from "@/db/client";
 import { lifespan } from "@/lib/text";
 import { THEMES } from "@/lib/themes";
 import type { PoemView } from "@/server/poems";
+import { weeklyGazette } from "@/server/gazette";
 import { listAuthors, listPoems, pickTextPoems, poemsOfTheDay } from "@/server/poems";
 
 // Les poèmes du jour et les publications changent sans redéploiement.
@@ -42,7 +46,10 @@ function DailyCard({ poem, kind, featured, large }: { poem: PoemView; kind: "cla
           : "bg-ivory-soft/70 px-7 py-8 lg:col-span-2"
       }`}
     >
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Papier à lettres : filet doré intérieur, et le cachet de cire qui scelle le poème du jour. */}
+      <span aria-hidden className="pointer-events-none absolute inset-2.5 rounded-[1.6rem] border border-gold/35" />
+      {(large || featured) && <WaxSeal size={large ? 76 : 56} className="absolute right-5 top-5 sm:right-8 sm:top-7" tilt={large ? -8 : 7} />}
+      <div className={`flex flex-wrap items-center gap-2 ${large || featured ? "pr-20" : ""}`}>
         <span className="rounded-full bg-ink px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-wider text-ivory">{label}</span>
         <ProvenanceBadge origin={poem.origin} sourceUrl={poem.sourceUrl} />
         {kind === "community" && featured && (
@@ -76,7 +83,13 @@ function DailyCard({ poem, kind, featured, large }: { poem: PoemView; kind: "cla
 
 export default async function Home() {
   const db = await getDb();
-  const [today, community, authors, shuffle] = await Promise.all([poemsOfTheDay(db), listPoems(db, { origin: "member", pageSize: 3 }), listAuthors(db), pickTextPoems(db, { limit: 3 })]);
+  const [today, community, authors, shuffle, gazette] = await Promise.all([
+    poemsOfTheDay(db),
+    listPoems(db, { origin: "member", pageSize: 3 }),
+    listAuthors(db),
+    pickTextPoems(db, { limit: 3 }),
+    weeklyGazette(db),
+  ]);
 
   const daily = [today.spotlight === "classic" ? today.classic : today.community, today.spotlight === "classic" ? today.community : today.classic].filter(
     (p): p is PoemView => Boolean(p),
@@ -194,6 +207,12 @@ export default async function Home() {
             </div>
           </section>
         )}
+
+        {/* Le coup de chapeau Régence : la chronique de la semaine. */}
+        <div className="flex flex-col gap-10">
+          <Ornament />
+          <Gazette data={gazette} />
+        </div>
 
         {/* Découvrir autrement */}
         <section aria-labelledby="autrement" className="flex flex-col gap-6">

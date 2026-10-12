@@ -17,6 +17,9 @@
   --color-ink: #3a332d;
   --color-ink-soft: #675e58;
   --color-ink-faint: #6f665f;
+  /* Or discret (époque Régence) : filets, fleurons, bord des cachets — décor seulement, jamais pour du texte courant. */
+  --color-gold: #a8834f;
+  --color-gold-soft: #d9c39a;
 }
 
 @theme inline {
@@ -30,6 +33,8 @@
   --color-ink: var(--color-ink);
   --color-ink-soft: var(--color-ink-soft);
   --color-ink-faint: var(--color-ink-faint);
+  --color-gold: var(--color-gold);
+  --color-gold-soft: var(--color-gold-soft);
 
   --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
@@ -198,4 +203,40 @@ body {
 .ink-line {
   transform-origin: left;
   animation: ink-line 1.2s ease-in-out infinite alternate;
+}
+
+/* --- Coup de chapeau Régence : le cachet de cire se frappe quand il apparaît --- */
+@keyframes seal-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.6) rotate(-18deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.94) rotate(4deg);
+  }
+  100% {
+    transform: scale(1) rotate(var(--seal-r, -6deg));
+  }
+}
+.seal {
+  transform: rotate(var(--seal-r, -6deg));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .seal-stamp {
+    animation: seal-stamp 0.7s cubic-bezier(0.3, 1.4, 0.5, 1) 0.4s both;
+  }
+}
+/* Papier de la gazette : grain léger et bord intérieur gravé. */
+.gazette-paper {
+  background-color: #f6efe1;
+  background-image:
+    radial-gradient(rgba(58, 51, 45, 0.035) 1px, transparent 1px),
+    radial-gradient(rgba(168, 131, 79, 0.05) 1px, transparent 1px);
+  background-size:
+    5px 5px,
+    9px 9px;
+  background-position:
+    0 0,
+    2px 3px;
 }
