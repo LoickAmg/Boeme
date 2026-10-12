@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 
 import { Pagination } from "@/components/Pagination";
+import Link from "next/link";
+
 import { PoemCard } from "@/components/PoemCard";
+import { ProvenanceBadge } from "@/components/Provenance";
 import { getDb } from "@/db/client";
 import { THEMES, isThemeId, themeLabel } from "@/lib/themes";
 import { listAuthors, listPoems } from "@/server/poems";
@@ -43,9 +46,18 @@ export default async function LibraryPage({ searchParams }: PageProps<"/biblioth
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12 sm:px-8 sm:py-16">
-      <h1 className="font-serif text-5xl italic text-ink">Bibliothèque</h1>
+      <div className="flex flex-wrap gap-2">
+        <ProvenanceBadge origin="classic" sourceUrl="https://fr.wikisource.org" />
+        <ProvenanceBadge origin="reference" sourceUrl="https://fr.wikipedia.org" />
+      </div>
+      <h1 className="mt-3 font-serif text-5xl italic text-ink">Bibliothèque</h1>
       <p className="mt-3 max-w-2xl text-ink-soft">
-        Des poèmes du domaine public, avec leur recueil, leur année et un lien vers la source. Les poèmes encore protégés ne sont que signalés : le texte n&apos;est pas reproduit.
+        Des poèmes repris de sources externes : textes du domaine public issus de Wikisource, avec leur recueil, leur année et un lien vers la source. Les poèmes encore
+        protégés ne sont que signalés, avec un lien : le texte n&apos;est pas reproduit. Aucun n&apos;a été écrit sur Boème — les poèmes des membres sont dans la{" "}
+        <Link href="/communaute" className="underline underline-offset-4">
+          communauté
+        </Link>
+        .
       </p>
 
       <form method="get" role="search" className="mt-8 grid gap-4 rounded-2xl border border-linen-deep/60 bg-ivory-soft/40 p-5 sm:grid-cols-2 lg:grid-cols-4">

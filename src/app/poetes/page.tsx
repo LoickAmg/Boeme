@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { ProvenanceBadge } from "@/components/Provenance";
 import { getDb } from "@/db/client";
 import { lifespan } from "@/lib/text";
 import { listAuthors } from "@/server/poems";
@@ -17,8 +18,16 @@ export default async function AuthorsPage() {
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12 sm:px-8 sm:py-16">
-      <h1 className="font-serif text-5xl italic text-ink">Poètes</h1>
-      <p className="mt-3 max-w-2xl text-ink-soft">Rangés par date de naissance, du Moyen Âge au début du XXe siècle.</p>
+      <ProvenanceBadge origin="classic" sourceUrl="https://fr.wikisource.org" />
+      <h1 className="mt-3 font-serif text-5xl italic text-ink">Poètes</h1>
+      <p className="mt-3 max-w-2xl text-ink-soft">
+        Les poètes de la bibliothèque, rangés par date de naissance, du Moyen Âge au début du XXe siècle. Leurs textes viennent de sources externes ; les membres de Boème
+        ont leurs poèmes dans la{" "}
+        <Link href="/communaute" className="underline underline-offset-4">
+          communauté
+        </Link>
+        .
+      </p>
       <ul className="mt-10 grid gap-4 md:grid-cols-2">
         {authors.map((author) => (
           <li key={author.id}>

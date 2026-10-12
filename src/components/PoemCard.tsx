@@ -1,16 +1,22 @@
 import Link from "next/link";
 
+import { ProvenanceBadge } from "@/components/Provenance";
 import type { PoemView } from "@/server/poems";
 import { excerpt } from "@/lib/text";
 import { themeLabel } from "@/lib/themes";
 
-const ORIGIN_LABEL = { classic: "Bibliothèque", reference: "À découvrir", member: "Communauté" } as const;
-
 export function PoemCard({ poem }: { poem: PoemView }) {
   const theme = themeLabel(poem.theme);
+  const member = poem.origin === "member";
 
   return (
-    <article className="relative flex flex-col rounded-2xl border border-linen-deep/60 bg-ivory-soft/60 px-6 py-6 shadow-[0_1px_2px_rgba(58,51,45,0.06)] transition-shadow hover:shadow-[0_4px_14px_rgba(58,51,45,0.09)]">
+    <article
+      className={`relative flex flex-col rounded-2xl border px-6 py-6 shadow-[0_1px_2px_rgba(58,51,45,0.06)] transition-shadow hover:shadow-[0_4px_14px_rgba(58,51,45,0.09)] ${
+        // Un poème de membre : papier clair et filet rose ; un texte d'une source externe : vélin.
+        member ? "border-rose/70 border-t-4 border-t-rose-deep bg-white/70" : "border-linen-deep/60 bg-ivory-soft/60"
+      }`}
+    >
+      <ProvenanceBadge origin={poem.origin} sourceUrl={poem.sourceUrl} className="mb-3 self-start" />
       <h3 className="font-serif text-2xl leading-snug text-ink">
         <Link href={`/poemes/${poem.slug}`} className="after:absolute after:inset-0">
           {poem.title}
@@ -40,30 +46,27 @@ export function PoemCard({ poem }: { poem: PoemView }) {
       )}
 
       <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-5 text-xs text-ink-soft">
-        <span className="inline-flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-rose" aria-hidden />
-          {ORIGIN_LABEL[poem.origin]}
-        </span>
-        {theme && (
-          <>
-            <span aria-hidden>·</span>
-            <span>{theme}</span>
-          </>
-        )}
-        {poem.collection && (
-          <>
-            <span aria-hidden>·</span>
-            <span className="italic">{poem.collection}</span>
-          </>
-        )}
-        {poem.favoriteCount > 0 && (
-          <>
-            <span aria-hidden>·</span>
+        {theme && <span>{theme}</span>}
+        {[
+          poem.collection && <span className="italic">{poem.collection}</span>,
+          member && poem.readerCount > 0 && (
+            <span>
+              {poem.readerCount} lecteur{poem.readerCount > 1 ? "s" : ""}
+            </span>
+          ),
+          poem.favoriteCount > 0 && (
             <span>
               {poem.favoriteCount} favori{poem.favoriteCount > 1 ? "s" : ""}
             </span>
-          </>
-        )}
+          ),
+        ]
+          .filter(Boolean)
+          .map((item, i) => (
+            <span key={i} className="inline-flex items-center gap-3">
+              {(i > 0 || theme) && <span aria-hidden>·</span>}
+              {item}
+            </span>
+          ))}
       </div>
     </article>
   );

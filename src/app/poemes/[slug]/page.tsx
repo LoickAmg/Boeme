@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { featureAction } from "@/app/actions/admin";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { LivingPoem } from "@/components/LivingPoem";
+import { ProvenanceBadge, readsLabel, sourceName } from "@/components/Provenance";
+import { ReadTracker } from "@/components/ReadTracker";
 import { ShareCard } from "@/components/ShareCard";
 import { ReportForm } from "@/components/ReportForm";
 import { getDb } from "@/db/client";
@@ -26,6 +28,7 @@ export async function generateMetadata({ params }: PageProps<"/poemes/[slug]">):
     description,
     alternates: { canonical: `/poemes/${poem.slug}` },
     openGraph: { type: "article", title: `${poem.title} — ${poem.authorName}`, description },
+    twitter: { card: "summary_large_image", title: `${poem.title} — ${poem.authorName}`, description },
   };
 }
 
@@ -62,11 +65,12 @@ export default async function PoemPage({ params, searchParams }: PageProps<"/poe
         </p>
       )}
 
+      {poem.origin === "member" && poem.status === "published" && !isOwner && <ReadTracker poemId={poem.id} />}
       <header>
-        <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
-          {poem.origin === "classic" ? "Bibliothèque" : poem.origin === "reference" ? "À découvrir" : "Communauté"}
-          {theme ? ` · ${theme}` : ""}
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <ProvenanceBadge origin={poem.origin} sourceUrl={poem.sourceUrl} />
+          {theme && <span className="text-xs font-semibold uppercase tracking-wide text-ink-soft">{theme}</span>}
+        </div>
         <h1 className="mt-3 font-serif text-5xl italic leading-tight text-ink sm:text-6xl">{poem.title}</h1>
         <p className="mt-3 text-lg text-ink-soft">
           {poem.authorSlug ? (
@@ -108,20 +112,42 @@ export default async function PoemPage({ params, searchParams }: PageProps<"/poe
       )}
 
       <footer className="mt-12 flex flex-col gap-6 border-t border-linen-deep/50 pt-6 text-sm text-ink-soft">
-        {poem.origin === "classic" && poem.sourceUrl && (
-          <p>
-            Texte du domaine public, d&apos;après{" "}
-            <a href={poem.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
-              Wikisource ↗
-            </a>
-            . Mise en page éditoriale sous licence CC BY-SA.
-          </p>
-        )}
-        {poem.origin === "member" && (
-          <p>
-            Poème publié par un membre{poem.publishedAt ? ` le ${formatDate(poem.publishedAt)}` : ""}, sous sa responsabilité.
-            {poem.generated ? " Point de départ proposé par le générateur, retravaillé par l'auteur." : ""}
-          </p>
+        {poem.origin === "member" ? (
+          <div className="rounded-2xl border border-rose/70 border-l-4 border-l-rose-deep bg-white/60 px-5 py-4">
+            <p className="font-semibold text-ink">Poème original, écrit et publié sur Boème</p>
+            <p className="mt-1">
+              Par{" "}
+              {poem.userId ? (
+                <Link href={`/membres/${poem.userId}`} className="underline underline-offset-4">
+                  {poem.authorName}
+                </Link>
+              ) : (
+                poem.authorName
+              )}
+              , membre de la communauté{poem.publishedAt ? `, le ${formatDate(poem.publishedAt)}` : ""}. Publié sous sa responsabilité.
+              {poem.generated ? " Point de départ proposé par le générateur, retravaillé par l'auteur." : ""}
+            </p>
+            {poem.status === "published" && (
+              <p className="mt-2 text-xs text-ink-faint">
+                {[readsLabel(poem.viewCount, poem.readerCount) ?? "Pas encore de lecture comptée", `${poem.favoriteCount} favori${poem.favoriteCount > 1 ? "s" : ""}`].join(" · ")}
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-linen-deep/70 bg-ivory-soft/60 px-5 py-4">
+            <p className="font-semibold text-ink">
+              {poem.origin === "classic" ? `Texte du domaine public, issu de ${sourceName(poem.sourceUrl)}` : `Œuvre protégée : référence vers ${sourceName(poem.sourceUrl)}`}
+            </p>
+            <p className="mt-1">
+              Ce poème n&apos;a pas été écrit sur Boème : il appartient à la bibliothèque, reprise d&apos;une source externe.
+              {poem.origin === "classic" ? " Mise en page éditoriale de la source sous licence CC BY-SA." : ""}
+            </p>
+            {poem.sourceUrl && (
+              <a href={poem.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block font-semibold text-ink underline underline-offset-4">
+                Voir la source ({sourceName(poem.sourceUrl)}) ↗
+              </a>
+            )}
+          </div>
         )}
 
         <div className="flex flex-wrap items-center gap-3">

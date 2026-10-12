@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Pagination } from "@/components/Pagination";
 import { PoemCard } from "@/components/PoemCard";
+import { ProvenanceBadge } from "@/components/Provenance";
 import { getDb } from "@/db/client";
 import { THEMES, isThemeId } from "@/lib/themes";
 import { listPoems } from "@/server/poems";
@@ -22,7 +23,8 @@ function first(value: string | string[] | undefined): string | undefined {
 export default async function CommunityPage({ searchParams }: PageProps<"/communaute">) {
   const query = await searchParams;
   const theme = first(query.theme);
-  const sort: PoemSort = first(query.tri) === "populaire" ? "populaire" : "recent";
+  const tri = first(query.tri);
+  const sort: PoemSort = tri === "populaire" || tri === "lus" ? tri : "recent";
   const page = Math.max(Number.parseInt(first(query.page) ?? "1", 10) || 1, 1);
 
   const result = await listPoems(await getDb(), { origin: "member", theme: isThemeId(theme) ? theme : undefined, sort, page });
@@ -30,9 +32,14 @@ export default async function CommunityPage({ searchParams }: PageProps<"/commun
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12 sm:px-8 sm:py-16">
-      <h1 className="font-serif text-5xl italic text-ink">Communauté</h1>
+      <ProvenanceBadge origin="member" sourceUrl={null} />
+      <h1 className="mt-3 font-serif text-5xl italic text-ink">Communauté</h1>
       <p className="mt-3 max-w-2xl text-ink-soft">
-        Les poèmes écrits par les membres, publiés sous leur responsabilité. Un poème vous gêne ? Signalez-le depuis sa page.
+        Uniquement des poèmes originaux, écrits et publiés sur Boème par ses membres, sous leur responsabilité. Les classiques repris de Wikisource sont à part, dans la{" "}
+        <Link href="/bibliotheque" className="underline underline-offset-4">
+          bibliothèque
+        </Link>
+        . Un poème vous gêne ? Signalez-le depuis sa page.
       </p>
       <p className="mt-4">
         <Link href="/ecrire" className="inline-block rounded-full bg-rose px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-rose-soft">
@@ -57,6 +64,7 @@ export default async function CommunityPage({ searchParams }: PageProps<"/commun
           <select name="tri" defaultValue={sort} className="rounded-xl border border-linen-deep bg-ivory-soft px-3 py-2.5 text-base font-normal">
             <option value="recent">Plus récents</option>
             <option value="populaire">Plus aimés</option>
+            <option value="lus">Plus lus</option>
           </select>
         </label>
         <button type="submit" className="rounded-full bg-ink px-6 py-2.5 text-sm font-semibold text-ivory transition-colors hover:bg-rose-deep">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { PoemCard } from "@/components/PoemCard";
+import { ProvenanceBadge } from "@/components/Provenance";
 import { ThemeIcon } from "@/components/home/ThemeIcon";
 import { Wordmark } from "@/components/home/Wordmark";
 import { getDb } from "@/db/client";
@@ -68,6 +69,7 @@ function DailyCard({ poem, kind, featured, large }: { poem: PoemView; kind: "cla
     >
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-full bg-ink px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-wider text-ivory">{label}</span>
+        <ProvenanceBadge origin={poem.origin} sourceUrl={poem.sourceUrl} />
         {kind === "community" && featured && (
           <span className="rounded-full bg-rose/60 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-wider text-ink">Mis à l&apos;honneur</span>
         )}
@@ -81,7 +83,6 @@ function DailyCard({ poem, kind, featured, large }: { poem: PoemView; kind: "cla
         {poem.authorName}
         {poem.year ? ` · ${poem.year}` : ""}
         {poem.collection ? ` · ${poem.collection}` : ""}
-        {kind === "community" ? " · membre de la communauté" : ""}
       </p>
       <div
         className={`mt-6 whitespace-pre-line font-serif text-ink ${large ? "line-clamp-[10] text-2xl leading-relaxed sm:text-[1.7rem]" : "line-clamp-[8] text-xl leading-relaxed"}`}
