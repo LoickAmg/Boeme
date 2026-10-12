@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { AuthCard } from "@/components/AuthCard";
 import { ResetPasswordForm } from "@/components/PasswordForms";
 import { getDb } from "@/db/client";
 import { resetTokenIsValid } from "@/server/password";
@@ -15,23 +16,19 @@ export default async function ResetPasswordPage({ searchParams }: PageProps<"/co
   const valid = await resetTokenIsValid(await getDb(), token);
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-12 sm:px-8 sm:py-16">
-      <h1 className="font-serif text-5xl italic text-ink">Nouveau mot de passe</h1>
+    <AuthCard title="Nouveau mot de passe" intro={valid ? "Choisissez votre nouveau mot de passe. Vous serez déconnecté de vos autres appareils." : undefined}>
       {valid ? (
-        <>
-          <p className="mt-4 mb-8 max-w-md text-ink-soft">Choisissez votre nouveau mot de passe. Vous serez déconnecté de tous vos autres appareils.</p>
-          <ResetPasswordForm token={token} />
-        </>
+        <ResetPasswordForm token={token} />
       ) : (
-        <div className="mt-6 max-w-md">
-          <p role="alert" className="rounded-xl border border-rose bg-rose-soft/40 px-4 py-3 text-sm text-ink">
+        <div className="flex flex-col items-center gap-6">
+          <p role="alert" className="w-full rounded-xl border border-rose bg-rose-soft/40 px-4 py-3 text-sm text-ink">
             Ce lien a expiré ou a déjà servi.
           </p>
-          <Link href="/compte/mot-de-passe-oublie" className="mt-6 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold text-ivory hover:bg-rose-deep">
+          <Link href="/compte/mot-de-passe-oublie" className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-ivory hover:bg-rose-deep">
             Demander un nouveau lien
           </Link>
         </div>
       )}
-    </div>
+    </AuthCard>
   );
 }

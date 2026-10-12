@@ -233,6 +233,19 @@ export const poemReads = pgTable(
   (table) => [primaryKey({ columns: [table.poemId, table.reader, table.day] })],
 );
 
+/**
+ * Image de couverture d'un poème de membre (photo du poème manuscrit, illustration…), réduite
+ * dans le navigateur avant l'envoi (900 px, JPEG) : quelques dizaines de kilo-octets, stockés en base64.
+ */
+export const poemCovers = pgTable("poem_covers", {
+  poemId: integer("poem_id")
+    .primaryKey()
+    .references(() => poems.id, { onDelete: "cascade" }),
+  mime: text("mime").notNull(),
+  data: text("data").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const poemsRelations = relations(poems, ({ one }) => ({
   author: one(authors, { fields: [poems.authorId], references: [authors.id] }),
   user: one(users, { fields: [poems.userId], references: [users.id] }),

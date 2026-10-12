@@ -32,8 +32,15 @@ function Account({ user }: { user: User | null }) {
           Modération
         </Link>
       )}
-      <Link href="/compte" className="font-medium text-ink-soft transition-colors hover:text-ink">
-        {user.name}
+      <Link
+        href="/compte"
+        title={`Mon espace — ${user.name}`}
+        className="inline-flex items-center gap-2 rounded-full border border-linen-deep bg-ivory-soft px-3 py-1.5 font-medium text-ink transition-colors hover:border-rose"
+      >
+        <span aria-hidden className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-deep font-serif text-sm italic text-ivory">
+          {user.name.trim().charAt(0).toUpperCase()}
+        </span>
+        Mon espace
       </Link>
       <form action={logoutAction}>
         <button type="submit" className="font-medium text-ink-soft underline-offset-4 transition-colors hover:text-ink hover:underline">

@@ -79,6 +79,12 @@ function DesktopGroup({ label, items, pathname }: { label: string; items: NavLin
 export function MainNav({ items, extra, action }: { items: NavItem[]; extra?: React.ReactNode; action?: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  // Le menu se referme dès que la page change (même par un lien hors du menu).
+  const [shownFor, setShownFor] = useState(pathname);
+  if (shownFor !== pathname) {
+    setShownFor(pathname);
+    setOpen(false);
+  }
 
   const mobileLink = (item: NavLink, nested = false) => {
     const active = isActive(pathname, item.href);
@@ -147,7 +153,12 @@ export function MainNav({ items, extra, action }: { items: NavItem[]; extra?: Re
               ),
             )}
           </nav>
-          {extra ? <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-linen-deep/60 px-1 pt-3 text-sm">{extra}</div> : null}
+          {extra ? (
+            // Un clic sur « Mon espace », « Connexion »… referme aussi le menu.
+            <div onClick={() => setOpen(false)} className="mt-3 flex flex-wrap items-center gap-3 border-t border-linen-deep/60 px-1 pt-3 pb-2 text-sm">
+              {extra}
+            </div>
+          ) : null}
         </div>
       )}
     </>

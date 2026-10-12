@@ -10,6 +10,18 @@ export function verseCount(body: string): number {
   return body.split("\n").filter((line) => line.trim() !== "").length;
 }
 
+/** Nombre de strophes : les groupes de vers séparés par une ligne vide. */
+export function stanzaCount(body: string): number {
+  return body.split(/\n\s*\n/).filter((block) => block.trim() !== "").length;
+}
+
+/** « 7 vers (lignes) · 2 strophes » : compréhensible sans connaître le vocabulaire de la poésie. */
+export function shapeLabel(body: string): string {
+  const verses = verseCount(body);
+  const stanzas = stanzaCount(body);
+  return `${verses} vers (ligne${verses > 1 ? "s" : ""}) · ${stanzas} strophe${stanzas > 1 ? "s" : ""}`;
+}
+
 const DATE_FORMAT = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
 export function formatDate(date: Date): string {

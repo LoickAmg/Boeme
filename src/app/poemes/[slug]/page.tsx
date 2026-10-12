@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { featureAction } from "@/app/actions/admin";
-import { FavoriteButton } from "@/components/FavoriteButton";
+import { FavoriteButton, FavoriteLoginLink } from "@/components/FavoriteButton";
 import { LivingPoem } from "@/components/LivingPoem";
 import { ProvenanceBadge, readsLabel, sourceName } from "@/components/Provenance";
 import { ReadTracker } from "@/components/ReadTracker";
@@ -46,6 +46,11 @@ export default async function PoemPage({ params, searchParams }: PageProps<"/poe
   const path = `/poemes/${poem.slug}`;
   const isOwner = Boolean(user && poem.userId === user.id);
   const theme = themeLabel(poem.theme);
+  const likeButton = user ? (
+    <FavoriteButton poemId={poem.id} active={favorites.has(poem.id)} count={poem.favoriteCount} returnTo={path} />
+  ) : (
+    <FavoriteLoginLink count={poem.favoriteCount} returnTo={path} />
+  );
 
   return (
     <article className="mx-auto w-full max-w-3xl px-6 py-12 sm:px-8 sm:py-16">
@@ -87,6 +92,7 @@ export default async function PoemPage({ params, searchParams }: PageProps<"/poe
           {poem.year ? ` · ${poem.year}` : ""}
           {poem.collection ? <span className="italic"> · {poem.collection}</span> : null}
         </p>
+        {poem.status === "published" && <div className="mt-5">{likeButton}</div>}
       </header>
 
       {poem.body ? (
@@ -129,7 +135,7 @@ export default async function PoemPage({ params, searchParams }: PageProps<"/poe
             </p>
             {poem.status === "published" && (
               <p className="mt-2 text-xs text-ink-faint">
-                {[readsLabel(poem.viewCount, poem.readerCount) ?? "Pas encore de lecture comptée", `${poem.favoriteCount} favori${poem.favoriteCount > 1 ? "s" : ""}`].join(" · ")}
+                {[readsLabel(poem.viewCount, poem.readerCount) ?? "Pas encore de lecture comptée", `${poem.favoriteCount} j'aime`].join(" · ")}
               </p>
             )}
           </div>
@@ -153,17 +159,7 @@ export default async function PoemPage({ params, searchParams }: PageProps<"/poe
         <div className="flex flex-wrap items-center gap-3">
           {poem.body && <LivingPoem title={poem.title} author={poem.authorName} body={poem.body} lang={poem.language} />}
           {poem.body && poem.status === "published" && <ShareCard title={poem.title} author={poem.authorName} body={poem.body} />}
-          {poem.status === "published" &&
-            (user ? (
-              <FavoriteButton poemId={poem.id} active={favorites.has(poem.id)} count={poem.favoriteCount} returnTo={path} />
-            ) : (
-              <Link
-                href={`/compte/connexion?retour=${encodeURIComponent(path)}`}
-                className="rounded-full border border-linen-deep bg-ivory-soft px-4 py-2 font-medium transition-colors hover:border-rose hover:text-ink"
-              >
-                ♡ Connectez-vous pour l&apos;ajouter aux favoris ({poem.favoriteCount})
-              </Link>
-            ))}
+          {poem.status === "published" && likeButton}
           {isOwner && poem.status !== "hidden" && (
             <Link href={`/ecrire/${poem.id}`} className="rounded-full border border-linen-deep bg-ivory-soft px-4 py-2 font-medium transition-colors hover:border-rose hover:text-ink">
               Modifier

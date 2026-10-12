@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState, useRef } from "react";
+import { useActionState, useRef, useState } from "react";
 
 import { savePoemAction } from "@/app/actions/poems";
 import type { PoemFormState } from "@/app/actions/poems";
-import { Field, inputClass } from "@/components/Field";
+import { CoverPicker } from "@/components/CoverPicker";
+import { Field, FormErrorSummary, inputClass } from "@/components/Field";
 import { ImportPoem } from "@/components/ImportPoem";
 import { THEMES } from "@/lib/themes";
 
@@ -18,9 +19,12 @@ export interface PoemFormValues {
   language: string;
   generated: boolean;
   published: boolean;
+  /** Adresse de la couverture actuelle (modification d'un poème qui en a une). */
+  coverUrl?: string | null;
 }
 
 export function PoemForm({ initial }: { initial: PoemFormValues }) {
+  const [cover, setCover] = useState<string | null>(null);
   const [state, action, pending] = useActionState(savePoemAction, INITIAL);
   const errors = state.errors ?? {};
   const values = { ...initial, ...state.values };
@@ -28,7 +32,14 @@ export function PoemForm({ initial }: { initial: PoemFormValues }) {
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
   /** Texte importé : placé dans l'éditeur (le titre seulement s'il est encore vide). */
-  function placeImported(text: { title: string; body: string }) {
+  function placeImported(text: { title: string; body: string }, fromImage: boolean, file: File) {
+    // La photo du poème devient sa couverture (si aucune n'est encore choisie).
+    if (fromImage && !cover && file.type.startsWith("image/")) {
+      import("@/lib/import/coverImage")
+        .then(({ coverFromFile }) => coverFromFile(file))
+        .then(setCover)
+        .catch(() => undefined);
+    }
     const body = bodyRef.current;
     if (body) {
       const current = body.value.trim();
@@ -43,11 +54,7 @@ export function PoemForm({ initial }: { initial: PoemFormValues }) {
 
   return (
     <form action={action} className="flex flex-col gap-6" noValidate>
-      {state.message && (
-        <p role="alert" className="rounded-xl border border-rose bg-rose-soft/40 px-4 py-3 text-sm text-ink">
-          {state.message}
-        </p>
-      )}
+      <FormErrorSummary message={state.message} errors={errors} />
       {initial.id ? <input type="hidden" name="id" value={initial.id} /> : null}
       {!initial.id && <ImportPoem onText={placeImported} />}
       {initial.generated ? <input type="hidden" name="generated" value="1" /> : null}
@@ -60,7 +67,7 @@ export function PoemForm({ initial }: { initial: PoemFormValues }) {
         id="body"
         label="Poème"
         error={errors.body}
-        hint="Un vers par ligne ; laissez une ligne vide entre deux strophes. 6 000 caractères au plus."
+        hint="Un vers = une ligne. Pour séparer deux strophes (les « paragraphes » du poème), laissez une ligne vide entre elles. 6 000 caractères au plus."
       >
         {(props) => (
           <textarea
@@ -99,6 +106,8 @@ export function PoemForm({ initial }: { initial: PoemFormValues }) {
           )}
         </Field>
       </div>
+
+      <CoverPicker existing={initial.coverUrl ?? null} value={cover} onChange={setCover} error={errors.cover} />
 
       {initial.generated && (
         <p className="text-sm text-ink-soft">

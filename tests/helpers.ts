@@ -20,7 +20,7 @@ export async function createTestDb(options: { seeded?: boolean } = {}): Promise<
 /** Remet la base à zéro sans la recréer : bien plus rapide que de relancer PGlite avant chaque test. */
 export async function resetDb(db: Db, options: { seeded?: boolean } = {}): Promise<void> {
   await db.execute(sql`
-    truncate table poem_reads, password_resets, corpse_lines, corpses, daily_features, reports, favorites, poems, authors, sessions, users, rate_limits
+    truncate table poem_covers, poem_reads, password_resets, corpse_lines, corpses, daily_features, reports, favorites, poems, authors, sessions, users, rate_limits
     restart identity cascade
   `);
   if (options.seeded) await seedLibrary(db);

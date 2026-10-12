@@ -9,7 +9,7 @@ import { tidyImportedText } from "@/lib/import/tidy";
  * est lu sur l'appareil (rien n'est envoyé tant que le poème n'est pas enregistré), mis en
  * forme, puis placé dans l'éditeur pour être relu.
  */
-export function ImportPoem({ onText }: { onText: (text: { title: string; body: string }, fromImage: boolean) => void }) {
+export function ImportPoem({ onText }: { onText: (text: { title: string; body: string }, fromImage: boolean, file: File) => void }) {
   const imageInput = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<{ ratio: number; label: string } | null>(null);
@@ -30,10 +30,10 @@ export function ImportPoem({ onText }: { onText: (text: { title: string; body: s
         return;
       }
       const fromImage = file.type.startsWith("image/") || /\.(png|jpe?g|webp|heic|heif|bmp|gif|tiff?)$/i.test(file.name);
-      onText(result, fromImage);
+      onText(result, fromImage, file);
       setDone(
         fromImage
-          ? "Texte reconnu et placé dans l'éditeur. Relisez-le attentivement : la lecture automatique peut se tromper, surtout sur l'écriture manuscrite."
+          ? "Texte reconnu et placé dans l'éditeur, et la photo devient la couverture du poème (vous pouvez la retirer plus bas). Relisez le texte attentivement : la lecture automatique peut se tromper, surtout sur l'écriture manuscrite."
           : "Texte importé et placé dans l'éditeur. Vérifiez les retours à la ligne avant de publier.",
       );
     } catch (e) {

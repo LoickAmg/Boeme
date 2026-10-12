@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { adminResetLinkAction, changePasswordAction, forgotPasswordAction, resetPasswordAction } from "@/app/actions/password";
 import type { PasswordState } from "@/app/actions/password";
 import { Field, inputClass } from "@/components/Field";
+import { PasswordInput } from "@/components/PasswordInput";
 
 const INITIAL: PasswordState = {};
 
@@ -21,19 +22,20 @@ const button = "self-start rounded-full bg-ink px-6 py-3 text-sm font-semibold t
 
 export function ChangePasswordForm() {
   const [state, action, pending] = useActionState(changePasswordAction, INITIAL);
+  const [next, setNext] = useState("");
   const errors = state.errors ?? {};
   return (
     // La clé remet les champs à zéro après un changement réussi.
     <form key={state.ok ? "fait" : "saisie"} action={action} className="flex max-w-md flex-col gap-5" noValidate>
       <Notice state={state} />
       <Field id="current" label="Mot de passe actuel" error={errors.current}>
-        {(props) => <input {...props} name="current" type="password" autoComplete="current-password" required className={inputClass} />}
+        {(props) => <PasswordInput {...props} name="current" autoComplete="current-password" />}
       </Field>
-      <Field id="new-password" label="Nouveau mot de passe" error={errors.password} hint="10 caractères au minimum.">
-        {(props) => <input {...props} name="password" type="password" autoComplete="new-password" required minLength={10} className={inputClass} />}
+      <Field id="new-password" label="Nouveau mot de passe" error={errors.password}>
+        {(props) => <PasswordInput {...props} name="password" autoComplete="new-password" withRules onValue={setNext} />}
       </Field>
       <Field id="confirm-password" label="Confirmez le nouveau mot de passe" error={errors.confirm}>
-        {(props) => <input {...props} name="confirm" type="password" autoComplete="new-password" required className={inputClass} />}
+        {(props) => <PasswordInput {...props} name="confirm" autoComplete="new-password" matchWith={next} />}
       </Field>
       <button type="submit" disabled={pending} className={button}>
         {pending ? "Un instant…" : "Changer mon mot de passe"}
@@ -46,7 +48,7 @@ export function ForgotPasswordForm() {
   const [state, action, pending] = useActionState(forgotPasswordAction, INITIAL);
   if (state.ok) return <Notice state={state} />;
   return (
-    <form action={action} className="flex max-w-md flex-col gap-5" noValidate>
+    <form action={action} className="flex w-full flex-col gap-5" noValidate>
       <Notice state={state} />
       <Field id="email" label="Adresse e-mail du compte" error={state.errors?.email}>
         {(props) => <input {...props} name="email" type="email" autoComplete="email" defaultValue={state.values?.email} required className={inputClass} />}
@@ -60,16 +62,17 @@ export function ForgotPasswordForm() {
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const [state, action, pending] = useActionState(resetPasswordAction, INITIAL);
+  const [next, setNext] = useState("");
   const errors = state.errors ?? {};
   return (
-    <form action={action} className="flex max-w-md flex-col gap-5" noValidate>
+    <form action={action} className="flex w-full flex-col gap-5" noValidate>
       <Notice state={state} />
       <input type="hidden" name="token" value={token} />
-      <Field id="new-password" label="Nouveau mot de passe" error={errors.password} hint="10 caractères au minimum.">
-        {(props) => <input {...props} name="password" type="password" autoComplete="new-password" required minLength={10} className={inputClass} />}
+      <Field id="new-password" label="Nouveau mot de passe" error={errors.password}>
+        {(props) => <PasswordInput {...props} name="password" autoComplete="new-password" withRules onValue={setNext} />}
       </Field>
       <Field id="confirm-password" label="Confirmez le mot de passe" error={errors.confirm}>
-        {(props) => <input {...props} name="confirm" type="password" autoComplete="new-password" required className={inputClass} />}
+        {(props) => <PasswordInput {...props} name="confirm" autoComplete="new-password" matchWith={next} />}
       </Field>
       <button type="submit" disabled={pending} className={button}>
         {pending ? "Un instant…" : "Enregistrer et me connecter"}

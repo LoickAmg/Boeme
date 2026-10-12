@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
+import { AuthCard } from "@/components/AuthCard";
 import { AuthForm } from "@/components/AuthForm";
 import { safeReturnPath } from "@/lib/redirect";
 import { getCurrentUser } from "@/server/context";
@@ -13,9 +14,8 @@ export default async function LoginPage({ searchParams }: PageProps<"/compte/con
   if (await getCurrentUser()) redirect(returnTo);
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-12 sm:px-8 sm:py-16">
-      <h1 className="mb-8 font-serif text-5xl italic text-ink">Connexion</h1>
+    <AuthCard title="Connexion" intro="Heureux de vous revoir.">
       <AuthForm mode="login" returnTo={returnTo} />
-    </div>
+    </AuthCard>
   );
 }

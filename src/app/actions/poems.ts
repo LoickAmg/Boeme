@@ -8,6 +8,7 @@ import { GENERATOR_TO_LIBRARY_THEME } from "@/lib/poetry/labels";
 import { THEME_IDS as GENERATOR_THEME_IDS } from "@/lib/poetry/types";
 import type { ThemeId as GeneratorThemeId } from "@/lib/poetry/types";
 import { safeReturnPath } from "@/lib/redirect";
+import { CoverError, parseCover, removeCover, setCover } from "@/server/covers";
 import { requireUser } from "@/server/guard";
 import {
   PoemAccessError,
@@ -52,10 +53,23 @@ export async function savePoemAction(_previous: PoemFormState, formData: FormDat
     generated: raw.generated === "1",
   };
 
+  // La couverture est vérifiée avant d'enregistrer quoi que ce soit.
+  const coverUrl = (raw.cover ?? "").trim();
+  if (coverUrl) {
+    try {
+      parseCover(coverUrl);
+    } catch (error) {
+      if (error instanceof CoverError) return { errors: { cover: error.message }, values };
+      throw error;
+    }
+  }
+
   let slug: string;
   try {
     const poem = Number.isInteger(id) && id > 0 ? await updateMemberPoem(db, user, id, input) : await createMemberPoem(db, user, input);
     slug = poem.slug;
+    if (coverUrl) await setCover(db, user, poem.id, coverUrl);
+    else if (raw.removeCover === "1") await removeCover(db, user, poem.id);
   } catch (error) {
     if (error instanceof PoemValidationError) return { errors: { [error.field]: error.message }, values };
     if (error instanceof PoemAccessError) return { message: error.message, values };

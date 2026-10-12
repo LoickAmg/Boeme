@@ -158,3 +158,44 @@ body {
     animation: none;
   }
 }
+
+/* --- Navigation plus douce : défilement animé vers les ancres, pages qui apparaissent en fondu --- */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+  .page-enter {
+    animation: page-enter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+}
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+/* Plume qui écrit pendant le chargement d'une page. */
+@keyframes quill-write {
+  0%,
+  100% {
+    transform: translateX(-14px) rotate(-8deg);
+  }
+  50% {
+    transform: translateX(14px) rotate(4deg);
+  }
+}
+.quill-write {
+  animation: quill-write 1.2s ease-in-out infinite;
+}
+@keyframes ink-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.ink-line {
+  transform-origin: left;
+  animation: ink-line 1.2s ease-in-out infinite alternate;
+}

@@ -39,7 +39,7 @@ function fieldErrors(error: z.ZodError): Record<string, string> {
 
 export async function registerAction(_previous: AuthState, formData: FormData): Promise<AuthState> {
   const raw = Object.fromEntries(formData) as Record<string, string>;
-  const values = { name: raw.name ?? "", email: raw.email ?? "", retour: raw.retour ?? "" };
+  const values = { name: raw.name ?? "", email: raw.email ?? "", retour: raw.retour ?? "", charter: raw.charter ?? "" };
 
   const parsed = z
     .object({

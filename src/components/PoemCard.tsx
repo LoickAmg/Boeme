@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ProvenanceBadge } from "@/components/Provenance";
+import { ProvenanceBadge, sourceName } from "@/components/Provenance";
 import type { PoemView } from "@/server/poems";
 import { excerpt } from "@/lib/text";
 import { themeLabel } from "@/lib/themes";
@@ -40,9 +40,21 @@ export function PoemCard({ poem }: { poem: PoemView }) {
       {poem.body ? (
         <p className="mt-4 whitespace-pre-line font-serif text-lg leading-relaxed text-ink">{excerpt(poem.body)}</p>
       ) : (
-        <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-          Poème encore protégé par le droit d&apos;auteur : le texte n&apos;est pas reproduit ici, seulement un lien vers sa source.
-        </p>
+        <>
+          <p className="mt-4 text-sm leading-relaxed text-ink-soft">
+            Poème encore protégé par le droit d&apos;auteur : Boème ne reproduit pas son texte. Il se lit sur le site de sa source.
+          </p>
+          {poem.sourceUrl && (
+            <a
+              href={poem.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative z-[1] mt-4 inline-flex w-fit items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-semibold text-ivory transition-colors hover:bg-rose-deep"
+            >
+              Lire la source ({sourceName(poem.sourceUrl)}) ↗
+            </a>
+          )}
+        </>
       )}
 
       <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-5 text-xs text-ink-soft">
@@ -55,8 +67,8 @@ export function PoemCard({ poem }: { poem: PoemView }) {
             </span>
           ),
           poem.favoriteCount > 0 && (
-            <span>
-              {poem.favoriteCount} favori{poem.favoriteCount > 1 ? "s" : ""}
+            <span title={`${poem.favoriteCount} personne${poem.favoriteCount > 1 ? "s aiment" : " aime"} ce poème`} className="text-rose-deep">
+              ♥ {poem.favoriteCount}
             </span>
           ),
         ]

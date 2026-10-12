@@ -30,6 +30,7 @@ export default async function EditPage({ params }: PageProps<"/ecrire/[id]">) {
           language: poem.language,
           generated: poem.generated,
           published: poem.status === "published",
+          coverUrl: poem.coverVersion ? `/api/poemes/${poem.id}/couverture?v=${poem.coverVersion}` : null,
         }}
       />
     </div>

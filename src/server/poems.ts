@@ -47,6 +47,8 @@ export interface PoemView {
   /** Lectures et lecteurs distincts (poèmes de membres uniquement ; 0 ailleurs). */
   viewCount: number;
   readerCount: number;
+  /** Version de la couverture (horodatage), ou null s'il n'y en a pas. */
+  coverVersion: number | null;
 }
 
 const favoriteCount = sql<number>`(select count(*)::int from favorites f where f.poem_id = poems.id)`;
@@ -72,6 +74,7 @@ const viewColumns = {
   favoriteCount,
   viewCount: poems.viewCount,
   readerCount: poems.readerCount,
+  coverVersion: sql<number | null>`(select floor(extract(epoch from c.updated_at))::int from poem_covers c where c.poem_id = poems.id)`,
 };
 
 function escapeLike(value: string): string {
