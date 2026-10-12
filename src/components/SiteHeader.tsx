@@ -11,6 +11,7 @@ export const NAV: NavItem[] = [
   { href: "/bibliotheque", label: "Bibliothèque" },
   { href: "/poetes", label: "Poètes" },
   { href: "/communaute", label: "Communauté" },
+  { href: "/cadavre-exquis", label: "Cadavre exquis" },
   { href: "/constellation", label: "Constellation" },
   { href: "/generateur", label: "Générateur" },
 ];
@@ -48,7 +49,7 @@ export function SiteHeader({ user }: { user: User | null }) {
       >
         Aller au contenu
       </a>
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-3 px-6 py-4 sm:px-8">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-4 sm:px-8">
         <Link href="/" className="font-serif text-3xl italic tracking-wide text-ink" aria-label={`${site.name}, accueil`}>
           {site.name}
         </Link>
@@ -63,7 +64,7 @@ export function SiteHeader({ user }: { user: User | null }) {
           }
         />
 
-        <div className="hidden flex-wrap items-center gap-x-4 gap-y-2 text-sm lg:flex">
+        <div className="hidden flex-wrap items-center gap-x-4 gap-y-2 text-sm xl:flex">
           <Link href="/ecrire" className="rounded-full bg-rose px-4 py-2 font-semibold text-ink transition-colors hover:bg-rose-soft">
             Écrire
           </Link>

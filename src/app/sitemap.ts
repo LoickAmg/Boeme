@@ -6,7 +6,7 @@ import { listAuthors, listPoems } from "@/server/poems";
 
 export const dynamic = "force-dynamic";
 
-const STATIC_PATHS = ["/", "/bibliotheque", "/poetes", "/communaute", "/generateur", "/charte", "/mentions-legales", "/confidentialite", "/contact"];
+const STATIC_PATHS = ["/", "/bibliotheque", "/poetes", "/communaute", "/constellation", "/cadavre-exquis", "/generateur", "/charte", "/mentions-legales", "/confidentialite", "/contact"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();

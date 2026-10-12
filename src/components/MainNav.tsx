@@ -44,11 +44,11 @@ export function MainNav({ items, extra, action }: { items: NavItem[]; extra?: Re
 
   return (
     <>
-      <nav aria-label="Navigation principale" className="hidden items-center gap-x-6 text-sm font-medium text-ink-soft lg:flex">
+      <nav aria-label="Navigation principale" className="hidden items-center gap-x-6 text-sm font-medium text-ink-soft xl:flex xl:gap-x-5">
         {links(false)}
       </nav>
 
-      <div className="flex items-center gap-2 lg:hidden">
+      <div className="flex items-center gap-2 xl:hidden">
         {action}
         <button
           type="button"
@@ -67,7 +67,7 @@ export function MainNav({ items, extra, action }: { items: NavItem[]; extra?: Re
       </div>
 
       {open && (
-        <div id="menu-mobile" className="basis-full lg:hidden">
+        <div id="menu-mobile" className="basis-full xl:hidden">
           <nav aria-label="Navigation principale" className="flex flex-col gap-1 border-t border-linen-deep/60 pt-3">
             {links(true)}
           </nav>

@@ -213,6 +213,47 @@ export default async function Home() {
           </section>
         )}
 
+        {/* Découvrir autrement */}
+        <section aria-labelledby="autrement" className="flex flex-col gap-6">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-deep">Un grain de folie</p>
+            <h2 id="autrement" className="mt-2 font-serif text-4xl text-ink">
+              La poésie autrement
+            </h2>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Link href="/cadavre-exquis" className="group relative overflow-hidden rounded-[1.75rem] bg-ink px-7 py-8 text-ivory">
+              <div aria-hidden className="absolute inset-x-0 top-0 h-10 bg-[repeating-linear-gradient(180deg,rgba(248,243,236,0.18)_0_1px,transparent_1px_6px)]" />
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-soft">Jeu d&apos;écriture à plusieurs</p>
+              <h3 className="mt-2 font-serif text-3xl italic">Cadavre exquis</h3>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-ivory/75">Chacun écrit un vers en ne voyant que le précédent. Le poème se révèle quand il est complet.</p>
+              <span className="mt-4 inline-block text-sm font-semibold text-rose-soft group-hover:underline">Jouer →</span>
+            </Link>
+            <Link href="/constellation" className="group relative overflow-hidden rounded-[1.75rem] bg-[radial-gradient(120%_90%_at_50%_10%,#2a1f3d_0%,#141026_70%)] px-7 py-8 text-ivory">
+              <svg aria-hidden viewBox="0 0 200 80" className="absolute right-4 top-4 h-20 w-48 text-rose-soft/70">
+                <path d="M10 60 L50 30 L95 45 L140 15 L185 35" stroke="currentColor" strokeWidth="0.8" fill="none" />
+                {[[10, 60], [50, 30], [95, 45], [140, 15], [185, 35]].map(([x, y]) => (
+                  <circle key={x} cx={x} cy={y} r="2.4" fill="currentColor" className="twinkle" />
+                ))}
+              </svg>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-soft">Carte du ciel</p>
+              <h3 className="mt-2 font-serif text-3xl italic">La constellation</h3>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-ivory/75">Chaque poème est une étoile, chaque thème une constellation. Promenez-vous, cliquez, lisez.</p>
+              <span className="mt-4 inline-block text-sm font-semibold text-rose-soft group-hover:underline">S&apos;y perdre →</span>
+            </Link>
+            <div className="rounded-[1.75rem] border border-linen-deep/60 bg-ivory-soft/60 px-7 py-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-deep">Sur chaque poème</p>
+              <h3 className="mt-2 font-serif text-3xl italic text-ink">Le poème vivant</h3>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink-soft">Il s&apos;écrit sous vos yeux, comme à l&apos;encre, lu à voix haute, sur une pluie ou un feu de cheminée.</p>
+            </div>
+            <div className="rounded-[1.75rem] border border-linen-deep/60 bg-[linear-gradient(135deg,#ddc0bd,#c9a4a1)] px-7 py-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/70">Sur chaque poème</p>
+              <h3 className="mt-2 font-serif text-3xl italic text-ink">La carte-poème</h3>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink/80">Vos vers préférés en image, prêts pour une story Instagram, WhatsApp ou TikTok.</p>
+            </div>
+          </div>
+        </section>
+
         {/* Thèmes */}
         <section aria-labelledby="themes" className="flex flex-col gap-6">
           <div>
