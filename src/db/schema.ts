@@ -140,6 +140,63 @@ export const reports = pgTable(
   (table) => [index("reports_status_idx").on(table.status, table.createdAt)],
 );
 
+/**
+ * Poème de membre mis à l'honneur par un administrateur pour un jour donné (AAAA-MM-JJ, UTC) :
+ * il prend la place du poème de la communauté tiré au sort ce jour-là. Un poème n'est mis à
+ * l'honneur qu'une fois.
+ */
+export const dailyFeatures = pgTable(
+  "daily_features",
+  {
+    day: varchar("day", { length: 10 }).primaryKey(),
+    poemId: integer("poem_id")
+      .notNull()
+      .references(() => poems.id, { onDelete: "cascade" }),
+    chosenBy: uuid("chosen_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex("daily_features_poem_unique").on(table.poemId)],
+);
+
+/**
+ * Cadavre exquis : poème collectif écrit vers par vers. Tant qu'il est ouvert, chacun ne voit
+ * que le dernier vers ; une fois le nombre de vers atteint, il se révèle en entier.
+ */
+export const CORPSE_STATUSES = ["open", "complete"] as const;
+
+export const corpses = pgTable(
+  "corpses",
+  {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    theme: text("theme").notNull().default(""),
+    targetLines: integer("target_lines").notNull().default(12),
+    status: text("status", { enum: CORPSE_STATUSES }).notNull().default("open"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (table) => [uniqueIndex("corpses_slug_unique").on(table.slug), index("corpses_status_idx").on(table.status, table.createdAt)],
+);
+
+export const corpseLines = pgTable(
+  "corpse_lines",
+  {
+    id: serial("id").primaryKey(),
+    corpseId: integer("corpse_id")
+      .notNull()
+      .references(() => corpses.id, { onDelete: "cascade" }),
+    /** Rang du vers (1, 2, 3…) : unique par cadavre, ce qui empêche deux vers simultanés au même rang. */
+    position: integer("position").notNull(),
+    line: text("line").notNull(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    authorName: text("author_name").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex("corpse_lines_position_unique").on(table.corpseId, table.position)],
+);
+
 export const poemsRelations = relations(poems, ({ one }) => ({
   author: one(authors, { fields: [poems.authorId], references: [authors.id] }),
   user: one(users, { fields: [poems.userId], references: [users.id] }),
@@ -149,3 +206,5 @@ export type User = typeof users.$inferSelect;
 export type Author = typeof authors.$inferSelect;
 export type Poem = typeof poems.$inferSelect;
 export type Report = typeof reports.$inferSelect;
+export type Corpse = typeof corpses.$inferSelect;
+export type CorpseLine = typeof corpseLines.$inferSelect;

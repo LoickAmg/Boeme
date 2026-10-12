@@ -54,3 +54,46 @@ body {
   background: var(--color-rose-soft);
   color: var(--color-ink);
 }
+
+/* --- Animations de l'accueil (désactivées si l'appareil demande moins de mouvement) --- */
+@keyframes sheet-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(calc(var(--r, 0deg) + 0.6deg));
+  }
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+.sheet {
+  transform: rotate(var(--r, 0deg));
+  animation: sheet-float 9s ease-in-out infinite;
+}
+.twinkle {
+  animation: twinkle 4.5s ease-in-out infinite;
+}
+.fade-up {
+  animation: fade-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .twinkle,
+  .fade-up {
+    animation: none;
+  }
+}

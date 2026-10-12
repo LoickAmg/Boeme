@@ -8,6 +8,13 @@
       "when": 1790280901366,
       "tag": "0000_ambiguous_pestilence",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791814634570,
+      "tag": "0001_community_features",
+      "breakpoints": true
     }
   ]
 }

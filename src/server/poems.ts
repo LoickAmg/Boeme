@@ -4,7 +4,7 @@ import { and, asc, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 
 import type { Db } from "@/db/client";
-import { authors, favorites, poems, reports, users } from "@/db/schema";
+import { authors, dailyFeatures, favorites, poems, reports, users } from "@/db/schema";
 import type { Poem, User } from "@/db/schema";
 import { buildSearchText, normalizeForSearch, slugify } from "@/lib/slug";
 import { isReportReason } from "@/lib/report";
@@ -164,6 +164,134 @@ export async function poemOfTheDay(db: Db, now = new Date()): Promise<PoemView |
     .limit(1)
     .offset(dayNumber % n);
   return poem;
+}
+
+/** Jour civil UTC (AAAA-MM-JJ) et son numéro depuis 1970 : le « jour » de Boème change à minuit UTC. */
+export function dayKey(now = new Date()): string {
+  return now.toISOString().slice(0, 10);
+}
+
+function dayNumber(now: Date): number {
+  return Math.floor(now.getTime() / 86_400_000);
+}
+
+/** Tirage pseudo-aléatoire reproductible (le même toute la journée, pour tous les lecteurs). */
+function seeded(seed: number): number {
+  let t = (seed + 0x6d2b79f5) | 0;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+/**
+ * Poème de la communauté du jour : celui qu'un administrateur a mis à l'honneur pour ce
+ * jour, sinon un tirage parmi les poèmes publiés des membres, où chaque favori donne une
+ * chance de plus (plafonnée, pour que tout le monde garde sa chance).
+ */
+export async function communityPoemOfTheDay(db: Db, now = new Date()): Promise<{ poem: PoemView; featured: boolean } | undefined> {
+  const published = and(eq(poems.status, "published"), eq(poems.origin, "member"));
+  const [chosen] = await db
+    .select(viewColumns)
+    .from(dailyFeatures)
+    .innerJoin(poems, eq(dailyFeatures.poemId, poems.id))
+    .leftJoin(authors, eq(poems.authorId, authors.id))
+    .where(and(eq(dailyFeatures.day, dayKey(now)), published))
+    .limit(1);
+  if (chosen) return { poem: chosen, featured: true };
+
+  const candidates = await db.select({ id: poems.id, favorites: favoriteCount }).from(poems).where(published).orderBy(asc(poems.id)).limit(5000);
+  if (candidates.length === 0) return undefined;
+  const weights = candidates.map((c) => 1 + Math.min(c.favorites, 20));
+  let target = seeded(dayNumber(now)) * weights.reduce((a, b) => a + b, 0);
+  let pick = candidates[candidates.length - 1].id;
+  for (let i = 0; i < candidates.length; i++) {
+    target -= weights[i];
+    if (target < 0) {
+      pick = candidates[i].id;
+      break;
+    }
+  }
+  const [poem] = await db.select(viewColumns).from(poems).leftJoin(authors, eq(poems.authorId, authors.id)).where(eq(poems.id, pick)).limit(1);
+  return poem ? { poem, featured: false } : undefined;
+}
+
+export interface PoemsOfTheDay {
+  classic?: PoemView;
+  community?: PoemView;
+  /** Le poème de la communauté a été choisi par un administrateur. */
+  featured: boolean;
+  /** Poème en vedette (grand format) : un jour le classique, le lendemain celui de la communauté. */
+  spotlight: "classic" | "community";
+}
+
+export async function poemsOfTheDay(db: Db, now = new Date()): Promise<PoemsOfTheDay> {
+  const [classic, community] = await Promise.all([poemOfTheDay(db, now), communityPoemOfTheDay(db, now)]);
+  const communityDay = dayNumber(now) % 2 === 1 || (community?.featured ?? false);
+  return {
+    classic,
+    community: community?.poem,
+    featured: community?.featured ?? false,
+    spotlight: community && (communityDay || !classic) ? "community" : "classic",
+  };
+}
+
+export class FeatureError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "FeatureError";
+  }
+}
+
+/**
+ * Met un poème de membre à l'honneur au premier jour libre à partir d'aujourd'hui (une file :
+ * plusieurs choix d'avance passent les jours suivants). Renvoie le jour retenu.
+ */
+export async function featurePoem(db: Db, admin: Pick<User, "id">, poemId: number, now = new Date()): Promise<string> {
+  const [poem] = await db
+    .select({ id: poems.id })
+    .from(poems)
+    .where(and(eq(poems.id, poemId), eq(poems.status, "published"), eq(poems.origin, "member")))
+    .limit(1);
+  if (!poem) throw new FeatureError("Seul un poème publié de la communauté peut être mis à l'honneur.");
+  const [existing] = await db.select({ day: dailyFeatures.day }).from(dailyFeatures).where(eq(dailyFeatures.poemId, poemId)).limit(1);
+  if (existing) return existing.day;
+
+  const today = dayKey(now);
+  const taken = new Set(
+    (
+      await db
+        .select({ day: dailyFeatures.day })
+        .from(dailyFeatures)
+        .where(sql`${dailyFeatures.day} >= ${today}`)
+    ).map((r) => r.day),
+  );
+  for (let i = 0; i < 366; i++) {
+    const day = dayKey(new Date(now.getTime() + i * 86_400_000));
+    if (taken.has(day)) continue;
+    const inserted = await db.insert(dailyFeatures).values({ day, poemId, chosenBy: admin.id }).onConflictDoNothing().returning({ day: dailyFeatures.day });
+    if (inserted.length) return inserted[0].day;
+  }
+  throw new FeatureError("Aucun jour libre dans l'année à venir.");
+}
+
+export async function unfeaturePoem(db: Db, poemId: number): Promise<void> {
+  await db.delete(dailyFeatures).where(eq(dailyFeatures.poemId, poemId));
+}
+
+/** Jour de mise à l'honneur prévu (ou passé) d'un poème. */
+export async function featureDayOf(db: Db, poemId: number): Promise<string | undefined> {
+  const [row] = await db.select({ day: dailyFeatures.day }).from(dailyFeatures).where(eq(dailyFeatures.poemId, poemId)).limit(1);
+  return row?.day;
+}
+
+/** Mises à l'honneur à venir (aujourd'hui compris), pour la page de modération. */
+export async function upcomingFeatures(db: Db, now = new Date()): Promise<{ day: string; poemId: number; slug: string; title: string; authorName: string }[]> {
+  return db
+    .select({ day: dailyFeatures.day, poemId: poems.id, slug: poems.slug, title: poems.title, authorName: poems.authorName })
+    .from(dailyFeatures)
+    .innerJoin(poems, eq(dailyFeatures.poemId, poems.id))
+    .where(sql`${dailyFeatures.day} >= ${dayKey(now)}`)
+    .orderBy(asc(dailyFeatures.day));
 }
 
 export interface AuthorSummary {

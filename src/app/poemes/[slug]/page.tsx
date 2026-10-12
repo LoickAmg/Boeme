@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { featureAction } from "@/app/actions/admin";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { ReportForm } from "@/components/ReportForm";
 import { getDb } from "@/db/client";
 import { excerpt, formatDate } from "@/lib/text";
 import { themeLabel } from "@/lib/themes";
 import { getCurrentUser } from "@/server/context";
-import { favoriteIds, getPoemBySlug } from "@/server/poems";
+import { dayKey, favoriteIds, featureDayOf, getPoemBySlug } from "@/server/poems";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,10 @@ export default async function PoemPage({ params, searchParams }: PageProps<"/poe
   const poem = await getPoemBySlug(db, slug, user);
   if (!poem) notFound();
 
-  const favorites = await favoriteIds(db, user, [poem.id]);
+  const isAdmin = user?.role === "admin";
+  const canFeature = isAdmin && poem.origin === "member" && poem.status === "published";
+  const [favorites, featureDay] = await Promise.all([favoriteIds(db, user, [poem.id]), canFeature ? featureDayOf(db, poem.id) : undefined]);
+  const frenchDay = (day: string) => day.split("-").reverse().join("/");
   const path = `/poemes/${poem.slug}`;
   const isOwner = Boolean(user && poem.userId === user.id);
   const theme = themeLabel(poem.theme);
@@ -136,6 +140,28 @@ export default async function PoemPage({ params, searchParams }: PageProps<"/poe
             </Link>
           )}
         </div>
+
+        {canFeature && (
+          <form action={featureAction} className="flex flex-wrap items-center gap-3 rounded-2xl border border-linen-deep/60 bg-ivory-soft/50 px-4 py-3">
+            <input type="hidden" name="poemId" value={poem.id} />
+            <input type="hidden" name="retour" value={path} />
+            {featureDay ? (
+              <>
+                <span>
+                  {featureDay === dayKey() ? "À l'honneur aujourd'hui" : featureDay < dayKey() ? `Mis à l'honneur le ${frenchDay(featureDay)}` : `À l'honneur le ${frenchDay(featureDay)}`}
+                </span>
+                {featureDay >= dayKey() && (
+                  <button name="annuler" value="1" className="font-semibold text-rose-deep underline underline-offset-4">
+                    Annuler
+                  </button>
+                )}
+              </>
+            ) : (
+              <button className="rounded-full bg-ink px-4 py-2 font-semibold text-ivory transition-colors hover:bg-rose-deep">★ Mettre à l&apos;honneur</button>
+            )}
+            <span className="text-xs text-ink-faint">Administration : prend la place du poème de la communauté tiré au sort (premier jour libre).</span>
+          </form>
+        )}
 
         {poem.status === "published" && !isOwner && (user ? <ReportForm poemId={poem.id} returnTo={path} /> : null)}
       </footer>

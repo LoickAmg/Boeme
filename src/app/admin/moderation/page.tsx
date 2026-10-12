@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { moderateAction } from "@/app/actions/admin";
+import { featureAction, moderateAction } from "@/app/actions/admin";
 import { getDb } from "@/db/client";
 import { REPORT_REASON_LABELS } from "@/lib/report";
 import { formatDate } from "@/lib/text";
 import { requireAdmin } from "@/server/guard";
-import { AUTO_HIDE_REPORTS, listReports } from "@/server/poems";
+import { AUTO_HIDE_REPORTS, listReports, upcomingFeatures } from "@/server/poems";
 
 export const metadata: Metadata = { title: "Modération", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -16,7 +16,8 @@ const STATUS_LABEL = { published: "Publié", draft: "Brouillon", hidden: "Masqu�
 export default async function ModerationPage({ searchParams }: PageProps<"/admin/moderation">) {
   const [, query] = await Promise.all([requireAdmin(), searchParams]);
   const closed = (Array.isArray(query.vue) ? query.vue[0] : query.vue) === "traites";
-  const reports = await listReports(await getDb(), closed ? "closed" : "open");
+  const db = await getDb();
+  const [reports, features] = await Promise.all([listReports(db, closed ? "closed" : "open"), upcomingFeatures(db)]);
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12 sm:px-8 sm:py-16">
@@ -24,6 +25,37 @@ export default async function ModerationPage({ searchParams }: PageProps<"/admin
       <p className="mt-3 max-w-2xl text-ink-soft">
         Un poème de membre est masqué automatiquement à partir de {AUTO_HIDE_REPORTS} signalements de lecteurs différents. « Classer sans suite » le rétablit ; « Masquer » le garde retiré ; « Supprimer » l&apos;efface définitivement.
       </p>
+
+      <section aria-labelledby="honneur" className="mt-8 rounded-2xl border border-linen-deep/60 bg-ivory-soft/40 px-5 py-4">
+        <h2 id="honneur" className="font-serif text-2xl text-ink">
+          Mises à l&apos;honneur à venir
+        </h2>
+        <p className="mt-1 text-sm text-ink-soft">
+          Depuis la page d&apos;un poème de membre : « Mettre à l&apos;honneur ». Il prend la place du poème de la communauté tiré au sort, au premier jour libre.
+        </p>
+        {features.length === 0 ? (
+          <p className="mt-3 text-sm text-ink-soft">Aucune pour l&apos;instant : le poème de la communauté est tiré au sort chaque jour.</p>
+        ) : (
+          <ul className="mt-3 flex flex-col gap-2 text-sm">
+            {features.map((f) => (
+              <li key={f.day} className="flex flex-wrap items-center gap-3">
+                <span className="w-24 font-semibold text-ink">{f.day.split("-").reverse().join("/")}</span>
+                <Link href={`/poemes/${f.slug}`} className="font-serif text-lg text-ink underline-offset-4 hover:underline">
+                  {f.title}
+                </Link>
+                <span className="text-ink-soft">de {f.authorName}</span>
+                <form action={featureAction}>
+                  <input type="hidden" name="poemId" value={f.poemId} />
+                  <input type="hidden" name="retour" value="/admin/moderation" />
+                  <button name="annuler" value="1" className="text-rose-deep underline underline-offset-4">
+                    Annuler
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <nav aria-label="Filtre" className="mt-6 flex gap-4 text-sm font-medium">
         <Link href="/admin/moderation" aria-current={!closed ? "page" : undefined} className={!closed ? "text-ink underline underline-offset-4" : "text-ink-soft hover:text-ink"}>
