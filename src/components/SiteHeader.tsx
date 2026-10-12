@@ -11,6 +11,7 @@ export const NAV: NavItem[] = [
   { href: "/bibliotheque", label: "Bibliothèque" },
   { href: "/poetes", label: "Poètes" },
   { href: "/communaute", label: "Communauté" },
+  { href: "/constellation", label: "Constellation" },
   { href: "/generateur", label: "Générateur" },
 ];
 

@@ -294,6 +294,34 @@ export async function upcomingFeatures(db: Db, now = new Date()): Promise<{ day:
     .orderBy(asc(dailyFeatures.day));
 }
 
+/** Étoile de la constellation : un poème publié avec texte (classique ou de membre). */
+export interface StarPoem {
+  id: number;
+  slug: string;
+  title: string;
+  authorName: string;
+  theme: string;
+  origin: PoemOrigin;
+  favoriteCount: number;
+}
+
+export async function listConstellation(db: Db): Promise<StarPoem[]> {
+  return db
+    .select({
+      id: poems.id,
+      slug: poems.slug,
+      title: poems.title,
+      authorName: poems.authorName,
+      theme: poems.theme,
+      origin: poems.origin,
+      favoriteCount,
+    })
+    .from(poems)
+    .where(and(eq(poems.status, "published"), ne(poems.origin, "reference")))
+    .orderBy(asc(poems.id))
+    .limit(3000);
+}
+
 export interface AuthorSummary {
   id: number;
   slug: string;
