@@ -63,7 +63,15 @@ export default function PrivacyPage() {
 
       <LegalSection heading="Import d&apos;un poème">
         <p>
-          Quand vous importez une photo, une capture ou un document dans « Écrire », le texte est lu sur votre appareil, par votre navigateur : l&apos;image ou le fichier n&apos;est envoyé ni à Boème ni à un tiers. Seul le texte du poème part, quand vous l&apos;enregistrez.
+          Quand vous importez une photo, une capture ou un document dans « Écrire », le texte est lu sur votre appareil, par votre navigateur : l&apos;image ou le fichier n&apos;est envoyé ni à Boème ni à un tiers pour cette lecture. Le texte du poème part quand vous l&apos;enregistrez.
+        </p>
+      </LegalSection>
+
+      <LegalSection heading="Image de couverture">
+        <p>
+          Vous pouvez illustrer un poème avec une image (par défaut, la photo que vous avez importée : vous pouvez la retirer avant d&apos;enregistrer). Elle est d&apos;abord réduite sur
+          votre appareil, ce qui efface ses métadonnées (position, modèle d&apos;appareil…), puis enregistrée avec le poème. Elle est visible comme le poème : de vous seul pour un
+          brouillon, de tous une fois publié. Elle est effacée avec le poème ou votre compte.
         </p>
       </LegalSection>
 

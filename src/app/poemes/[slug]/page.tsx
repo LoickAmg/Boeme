@@ -95,6 +95,17 @@ export default async function PoemPage({ params, searchParams }: PageProps<"/poe
         {poem.status === "published" && <div className="mt-5">{likeButton}</div>}
       </header>
 
+      {poem.coverVersion && (
+        <figure className="mt-10 -rotate-1 rounded-sm border border-linen-deep/70 bg-ivory-soft p-3 shadow-[0_18px_40px_rgba(58,51,45,0.12)] sm:mx-8">
+          {/* eslint-disable-next-line @next/next/no-img-element -- image servie par l'API (déjà réduite) */}
+          <img
+            src={`/api/poemes/${poem.id}/couverture?v=${poem.coverVersion}`}
+            alt={`Illustration choisie par ${poem.authorName} pour « ${poem.title} »`}
+            className="max-h-[28rem] w-full rounded-sm object-cover"
+          />
+        </figure>
+      )}
+
       {poem.body ? (
         <div className="mt-10 whitespace-pre-line font-serif text-2xl leading-[1.8] text-ink sm:text-[1.75rem]" lang={poem.language}>
           {poem.body}

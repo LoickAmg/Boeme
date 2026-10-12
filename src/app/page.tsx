@@ -30,28 +30,48 @@ function initials(name: string): string {
   return ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase();
 }
 
-/** Feuillets flottants de l'ouverture : quelques vers des poèmes du jour, comme posés sur un bureau. */
+/**
+ * Feuillets de l'ouverture, en pile comme sur un bureau : deux feuillets derrière, dont on ne voit
+ * que le titre, et le premier poème du jour devant, lisible en entier, tenu par un ruban adhésif.
+ */
 function Sheets({ poems }: { poems: PoemView[] }) {
-  const sheets = poems.slice(0, 3);
-  const tilt = ["-6deg", "4deg", "-2deg"];
-  const place = ["left-0 top-6", "right-0 top-28", "left-10 top-64"];
+  const [front, ...back] = poems.slice(0, 3);
+  if (!front) return null;
+  const behind = [
+    { className: "-left-4 top-2", tilt: "-7deg" },
+    { className: "right-0 top-10", tilt: "6deg" },
+  ];
   return (
-    <div aria-hidden className="relative hidden h-[30rem] lg:block">
-      {sheets.map((poem, i) => (
+    <div aria-hidden className="relative mx-auto hidden h-[30rem] w-full max-w-md lg:block">
+      {back.map((poem, i) => (
         <div
           key={poem.id}
-          className={`sheet absolute w-72 rounded-sm border border-linen-deep/70 bg-ivory-soft px-7 py-6 shadow-[0_18px_40px_rgba(58,51,45,0.12)] ${place[i]}`}
-          style={{ ["--r" as string]: tilt[i], animationDelay: `${i * 1.6}s` }}
+          className={`sheet absolute w-72 rounded-sm border border-linen-deep/70 bg-[#efe6d4] px-7 py-6 shadow-[0_10px_24px_rgba(58,51,45,0.10)] ${behind[i].className}`}
+          style={{ ["--r" as string]: behind[i].tilt, animationDelay: `${(i + 1) * 1.8}s` }}
         >
-          <p className="font-serif text-xl italic text-ink">{poem.title}</p>
+          <p className="font-serif text-xl italic text-ink/80">{poem.title}</p>
           <p className="mt-1 text-[0.7rem] uppercase tracking-[0.18em] text-ink-faint">{poem.authorName}</p>
-          <div className="mt-4 space-y-1 font-serif text-lg leading-snug text-ink-soft">
-            {verses(poem.body, 4).map((v, j) => (
-              <p key={j}>{v}</p>
+          <div className="mt-4 space-y-2 opacity-40">
+            {[0.9, 0.7, 0.8].map((w, j) => (
+              <span key={j} className="block h-[3px] rounded-full bg-ink-faint" style={{ width: `${w * 100}%` }} />
             ))}
           </div>
         </div>
       ))}
+      <div
+        className="sheet absolute left-1/2 top-24 w-80 -translate-x-1/2 rounded-sm border border-linen-deep/70 bg-ivory-soft px-8 py-7 shadow-[0_24px_50px_rgba(58,51,45,0.16)]"
+        style={{ ["--r" as string]: "-1.5deg" }}
+      >
+        {/* Ruban adhésif : la touche « carnet » d'aujourd'hui sur un papier d'hier. */}
+        <span className="absolute -top-3 left-1/2 h-6 w-24 -translate-x-1/2 rotate-[-3deg] rounded-[2px] bg-rose/45 shadow-sm backdrop-blur-[1px]" />
+        <p className="font-serif text-2xl italic text-ink">{front.title}</p>
+        <p className="mt-1 text-[0.7rem] uppercase tracking-[0.18em] text-ink-faint">{front.authorName}</p>
+        <div className="mt-4 space-y-1 font-serif text-lg leading-snug text-ink-soft">
+          {verses(front.body, 5).map((v, j) => (
+            <p key={j}>{v}</p>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -117,10 +137,6 @@ export default async function Home() {
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_70%_at_85%_10%,rgba(201,164,161,0.35),transparent_70%),radial-gradient(50%_60%_at_0%_100%,rgba(221,204,174,0.55),transparent_70%)]"
         />
         <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full text-rose-deep/25" preserveAspectRatio="none" viewBox="0 0 1200 600">
-          <g stroke="currentColor" strokeWidth="0.8" fill="none">
-            <path d="M760 90 L840 150 L930 120 L1010 190 L1090 160" />
-            <path d="M820 420 L900 470 L980 430 L1060 500" />
-          </g>
           <g fill="currentColor">
             {[
               [760, 90, 2.4],
