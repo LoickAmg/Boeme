@@ -2,13 +2,14 @@ import Link from "next/link";
 
 import { PoemCard } from "@/components/PoemCard";
 import { ProvenanceBadge } from "@/components/Provenance";
+import { SheetDeck } from "@/components/home/SheetDeck";
 import { ThemeIcon } from "@/components/home/ThemeIcon";
 import { Wordmark } from "@/components/home/Wordmark";
 import { getDb } from "@/db/client";
 import { lifespan } from "@/lib/text";
 import { THEMES } from "@/lib/themes";
 import type { PoemView } from "@/server/poems";
-import { listAuthors, listPoems, poemsOfTheDay } from "@/server/poems";
+import { listAuthors, listPoems, pickTextPoems, poemsOfTheDay } from "@/server/poems";
 
 // Les poèmes du jour et les publications changent sans redéploiement.
 export const dynamic = "force-dynamic";
@@ -28,52 +29,6 @@ function initials(name: string): string {
     .split(/[\s-]+/)
     .filter(Boolean);
   return ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase();
-}
-
-/**
- * Feuillets de l'ouverture, en pile comme sur un bureau : deux feuillets derrière, dont on ne voit
- * que le titre, et le premier poème du jour devant, lisible en entier, tenu par un ruban adhésif.
- */
-function Sheets({ poems }: { poems: PoemView[] }) {
-  const [front, ...back] = poems.slice(0, 3);
-  if (!front) return null;
-  const behind = [
-    { className: "-left-4 top-2", tilt: "-7deg" },
-    { className: "right-0 top-10", tilt: "6deg" },
-  ];
-  return (
-    <div aria-hidden className="relative mx-auto hidden h-[30rem] w-full max-w-md lg:block">
-      {back.map((poem, i) => (
-        <div
-          key={poem.id}
-          className={`sheet absolute w-72 rounded-sm border border-linen-deep/70 bg-[#efe6d4] px-7 py-6 shadow-[0_10px_24px_rgba(58,51,45,0.10)] ${behind[i].className}`}
-          style={{ ["--r" as string]: behind[i].tilt, animationDelay: `${(i + 1) * 1.8}s` }}
-        >
-          <p className="font-serif text-xl italic text-ink/80">{poem.title}</p>
-          <p className="mt-1 text-[0.7rem] uppercase tracking-[0.18em] text-ink-faint">{poem.authorName}</p>
-          <div className="mt-4 space-y-2 opacity-40">
-            {[0.9, 0.7, 0.8].map((w, j) => (
-              <span key={j} className="block h-[3px] rounded-full bg-ink-faint" style={{ width: `${w * 100}%` }} />
-            ))}
-          </div>
-        </div>
-      ))}
-      <div
-        className="sheet absolute left-1/2 top-24 w-80 -translate-x-1/2 rounded-sm border border-linen-deep/70 bg-ivory-soft px-8 py-7 shadow-[0_24px_50px_rgba(58,51,45,0.16)]"
-        style={{ ["--r" as string]: "-1.5deg" }}
-      >
-        {/* Ruban adhésif : la touche « carnet » d'aujourd'hui sur un papier d'hier. */}
-        <span className="absolute -top-3 left-1/2 h-6 w-24 -translate-x-1/2 rotate-[-3deg] rounded-[2px] bg-rose/45 shadow-sm backdrop-blur-[1px]" />
-        <p className="font-serif text-2xl italic text-ink">{front.title}</p>
-        <p className="mt-1 text-[0.7rem] uppercase tracking-[0.18em] text-ink-faint">{front.authorName}</p>
-        <div className="mt-4 space-y-1 font-serif text-lg leading-snug text-ink-soft">
-          {verses(front.body, 5).map((v, j) => (
-            <p key={j}>{v}</p>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
 }
 
 /** Poème du jour, en grand (vedette) ou en carte. */
@@ -121,12 +76,13 @@ function DailyCard({ poem, kind, featured, large }: { poem: PoemView; kind: "cla
 
 export default async function Home() {
   const db = await getDb();
-  const [today, community, authors] = await Promise.all([poemsOfTheDay(db), listPoems(db, { origin: "member", pageSize: 3 }), listAuthors(db)]);
+  const [today, community, authors, shuffle] = await Promise.all([poemsOfTheDay(db), listPoems(db, { origin: "member", pageSize: 3 }), listAuthors(db), pickTextPoems(db, { limit: 3 })]);
 
   const daily = [today.spotlight === "classic" ? today.classic : today.community, today.spotlight === "classic" ? today.community : today.classic].filter(
     (p): p is PoemView => Boolean(p),
   );
-  const sheetPoems = [...daily, ...community.items].filter((p, i, all) => p.body && all.findIndex((q) => q.id === p.id) === i);
+  // La pile de l'accueil : les poèmes du jour devant, puis la communauté et quelques classiques.
+  const sheetPoems = [...daily, ...community.items, ...shuffle].filter((p, i, all) => p.body && all.findIndex((q) => q.id === p.id) === i);
 
   return (
     <div className="flex w-full flex-col">
@@ -203,7 +159,16 @@ export default async function Home() {
               </button>
             </form>
           </div>
-          <Sheets poems={sheetPoems} />
+          <SheetDeck
+            sheets={sheetPoems.slice(0, 7).map((poem) => ({
+              id: poem.id,
+              slug: poem.slug,
+              title: poem.title,
+              authorName: poem.authorName,
+              verses: verses(poem.body, 5),
+              member: poem.origin === "member",
+            }))}
+          />
         </div>
       </section>
 
