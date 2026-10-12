@@ -68,6 +68,11 @@ export function AuthForm({ mode, returnTo }: { mode: "login" | "register"; retur
         <Link href={register ? `/compte/connexion${suffix}` : `/compte/inscription${suffix}`} className="text-sm text-ink-soft underline underline-offset-4 hover:text-ink">
           {register ? "J'ai déjà un compte" : "Créer un compte"}
         </Link>
+        {!register && (
+          <Link href="/compte/mot-de-passe-oublie" className="text-sm text-ink-soft underline underline-offset-4 hover:text-ink">
+            Mot de passe oublié ?
+          </Link>
+        )}
       </div>
     </form>
   );

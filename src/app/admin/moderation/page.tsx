@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { featureAction, moderateAction } from "@/app/actions/admin";
+import { AdminResetLinkForm } from "@/components/PasswordForms";
 import { getDb } from "@/db/client";
 import { REPORT_REASON_LABELS } from "@/lib/report";
 import { formatDate } from "@/lib/text";
 import { requireAdmin } from "@/server/guard";
+import { mailConfigured } from "@/server/mail";
 import { AUTO_HIDE_REPORTS, listReports, upcomingFeatures } from "@/server/poems";
 
 export const metadata: Metadata = { title: "Modération", robots: { index: false } };
@@ -109,6 +111,17 @@ export default async function ModerationPage({ searchParams }: PageProps<"/admin
           ))}
         </ul>
       )}
+      <section aria-labelledby="acces" className="mt-16 border-t border-linen-deep/50 pt-8">
+        <h2 id="acces" className="font-serif text-2xl text-ink">
+          Mot de passe perdu d&apos;un membre
+        </h2>
+        <p className="mt-2 mb-5 max-w-2xl text-sm text-ink-soft">
+          {mailConfigured()
+            ? "Les membres reçoivent eux-mêmes leur lien par e-mail depuis « Mot de passe oublié ». En cas de souci, vous pouvez créer un lien ici."
+            : "L'envoi d'e-mails n'est pas configuré (variables SMTP) : quand un membre vous écrit, vérifiez que la demande vient bien de lui, puis créez un lien ici et transmettez-le-lui."}
+        </p>
+        <AdminResetLinkForm />
+      </section>
     </div>
   );
 }

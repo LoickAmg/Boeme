@@ -2,12 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { deletePoemAction } from "@/app/actions/poems";
+import { ChangePasswordForm } from "@/components/PasswordForms";
 import { BioForm, DeleteAccountForm } from "@/components/ProfileForms";
 import { PoemCard } from "@/components/PoemCard";
+import { readsLabel } from "@/components/Provenance";
 import { getDb } from "@/db/client";
 import { formatDate, verseCount } from "@/lib/text";
 import { requireUser } from "@/server/guard";
 import { listFavorites, listOwnPoems } from "@/server/poems";
+import { authorReadTotals } from "@/server/reads";
 
 export const metadata: Metadata = { title: "Mon espace", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -17,16 +20,20 @@ const STATUS_LABEL = { published: "Publié", draft: "Brouillon", hidden: "Masqu�
 export default async function AccountPage({ searchParams }: PageProps<"/compte">) {
   const [user, query] = await Promise.all([requireUser("/compte"), searchParams]);
   const db = await getDb();
-  const [own, favorites] = await Promise.all([listOwnPoems(db, user), listFavorites(db, user)]);
+  const [own, favorites, totals] = await Promise.all([listOwnPoems(db, user), listFavorites(db, user), authorReadTotals(db, user.id)]);
+  const favoriteGroups = [
+    { id: "favoris-communaute", title: "Écrits sur Boème", items: favorites.filter((poem) => poem.origin === "member") },
+    { id: "favoris-bibliotheque", title: "De la bibliothèque (sources externes)", items: favorites.filter((poem) => poem.origin !== "member") },
+  ].filter((group) => group.items.length > 0);
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12 sm:px-8 sm:py-16">
       <h1 className="font-serif text-5xl italic text-ink">Bonjour, {user.name}</h1>
       <p className="mt-2 text-sm text-ink-soft">{user.email}</p>
 
-      {(query.brouillon || query.supprime) && (
+      {(query.brouillon || query.supprime || query["mot-de-passe"]) && (
         <p role="status" className="mt-6 rounded-xl border border-rose bg-rose-soft/40 px-4 py-3 text-sm text-ink">
-          {query.brouillon ? "Brouillon enregistré." : "Poème supprimé."}
+          {query.brouillon ? "Brouillon enregistré." : query.supprime ? "Poème supprimé." : "Nouveau mot de passe enregistré : vous êtes connecté."}
         </p>
       )}
 
@@ -40,6 +47,12 @@ export default async function AccountPage({ searchParams }: PageProps<"/compte">
           </Link>
         </div>
 
+        {totals.views > 0 && (
+          <p className="mt-3 text-sm text-ink-soft">
+            Au total, vos poèmes ont été lus <strong className="text-ink">{totals.views}</strong> fois par <strong className="text-ink">{totals.readers}</strong> personne
+            {totals.readers > 1 ? "s" : ""} différente{totals.readers > 1 ? "s" : ""}.
+          </p>
+        )}
         {own.length === 0 ? (
           <p className="mt-4 text-ink-soft">
             Vous n&apos;avez encore rien écrit. Commencez par un{" "}
@@ -69,6 +82,7 @@ export default async function AccountPage({ searchParams }: PageProps<"/compte">
                   <p className="text-xs text-ink-soft">
                     {STATUS_LABEL[poem.status]} · {verseCount(poem.body)} vers · {formatDate(poem.publishedAt ?? poem.createdAt)}
                     {poem.status === "published" ? ` · ${poem.favoriteCount} favori${poem.favoriteCount > 1 ? "s" : ""}` : ""}
+                    {poem.status === "published" ? ` · ${readsLabel(poem.viewCount, poem.readerCount) ?? "pas encore lu"}` : ""}
                   </p>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
@@ -103,11 +117,18 @@ export default async function AccountPage({ searchParams }: PageProps<"/compte">
             .
           </p>
         ) : (
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {favorites.map((poem) => (
-              <PoemCard key={poem.id} poem={poem} />
-            ))}
-          </div>
+          favoriteGroups.map((group) => (
+            <div key={group.id} className="mt-6">
+              <h3 id={group.id} className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-deep">
+                {group.title}
+              </h3>
+              <div className="mt-3 grid gap-4 md:grid-cols-2">
+                {group.items.map((poem) => (
+                  <PoemCard key={poem.id} poem={poem} />
+                ))}
+              </div>
+            </div>
+          ))
         )}
       </section>
 
@@ -117,6 +138,15 @@ export default async function AccountPage({ searchParams }: PageProps<"/compte">
         </h2>
         <div className="mt-4">
           <BioForm bio={user.bio} />
+        </div>
+      </section>
+
+      <section aria-labelledby="mot-de-passe" className="mt-16">
+        <h2 id="mot-de-passe" className="font-serif text-3xl text-ink">
+          Mot de passe
+        </h2>
+        <div className="mt-4">
+          <ChangePasswordForm />
         </div>
       </section>
 

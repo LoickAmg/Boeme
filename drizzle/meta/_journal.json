@@ -15,6 +15,13 @@
       "when": 1791814634570,
       "tag": "0001_community_features",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791819796765,
+      "tag": "0002_reads_and_password_resets",
+      "breakpoints": true
     }
   ]
 }

@@ -41,6 +41,22 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
+      <LegalSection heading="Mot de passe oublié">
+        <p>
+          Si vous demandez un nouveau mot de passe, un e-mail contenant un lien à usage unique (valable une heure) est envoyé à l&apos;adresse de votre compte, par l&apos;intermédiaire du
+          prestataire d&apos;envoi d&apos;e-mails de l&apos;éditeur. Seule une empreinte du lien est conservée, jusqu&apos;à son utilisation ou son expiration. Changer de mot de passe
+          déconnecte vos autres appareils.
+        </p>
+      </LegalSection>
+
+      <LegalSection heading="Nombre de lectures">
+        <p>
+          Pour montrer aux auteurs combien de personnes lisent leurs poèmes, Boème compte les lectures des poèmes de membres : au plus une par lecteur, par poème et par jour. Le lecteur est
+          représenté par une empreinte salée et irréversible (de son compte s&apos;il est connecté, sinon de son adresse IP et de son navigateur) : ni l&apos;adresse IP ni l&apos;identité ne sont
+          enregistrées, et rien n&apos;est déposé sur votre appareil. Seuls les totaux sont affichés ; personne, pas même l&apos;auteur, ne voit qui a lu. Ces empreintes sont effacées avec le poème.
+        </p>
+      </LegalSection>
+
       <LegalSection heading="Générateur">
         <p>Le générateur reçoit vos choix (langue, ambiance, structure, longueur), jamais de texte libre. Si un modèle de langage externe est activé par l&apos;éditeur, ces seuls choix lui sont transmis, sans donnée personnelle.</p>
       </LegalSection>

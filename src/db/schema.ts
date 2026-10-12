@@ -43,6 +43,23 @@ export const sessions = pgTable(
   (table) => [index("sessions_user_idx").on(table.userId)],
 );
 
+/**
+ * Jeton de réinitialisation du mot de passe : seule son empreinte SHA-256 est stockée, il expire
+ * vite et ne sert qu'une fois.
+ */
+export const passwordResets = pgTable(
+  "password_resets",
+  {
+    id: text("id").primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("password_resets_user_idx").on(table.userId)],
+);
+
 export const rateLimits = pgTable("rate_limits", {
   key: text("key").primaryKey(),
   count: integer("count").notNull().default(0),
@@ -93,6 +110,9 @@ export const poems = pgTable(
     theme: text("theme").notNull().default(""),
     sourceUrl: text("source_url"),
     generated: integer("generated").notNull().default(0),
+    /** Lectures (un lecteur compte une fois par jour) et lecteurs distincts : tenus à jour par `recordRead`. */
+    viewCount: integer("view_count").notNull().default(0),
+    readerCount: integer("reader_count").notNull().default(0),
     /** Titre, auteur, thème et corps sans accents ni majuscules : la recherche s'y fait par simple sous-chaîne. */
     searchText: text("search_text").notNull().default(""),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -195,6 +215,22 @@ export const corpseLines = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [uniqueIndex("corpse_lines_position_unique").on(table.corpseId, table.position)],
+);
+
+/**
+ * Lecture d'un poème de membre : un lecteur (empreinte salée, jamais l'adresse IP ni l'identifiant
+ * en clair) au plus une fois par jour et par poème.
+ */
+export const poemReads = pgTable(
+  "poem_reads",
+  {
+    poemId: integer("poem_id")
+      .notNull()
+      .references(() => poems.id, { onDelete: "cascade" }),
+    reader: text("reader").notNull(),
+    day: varchar("day", { length: 10 }).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.poemId, table.reader, table.day] })],
 );
 
 export const poemsRelations = relations(poems, ({ one }) => ({

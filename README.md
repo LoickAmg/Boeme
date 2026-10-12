@@ -36,6 +36,7 @@ Autres commandes : `npm test`, `npm run lint`, `npm run typecheck`, `npm run db:
 1. **Base de données** : projet [Neon](https://neon.tech) gratuit, ou intégration Neon depuis le tableau de bord Vercel (elle renseigne `DATABASE_URL`).
 2. **Projet** : importez le dépôt dans Vercel. `vercel-build` applique les migrations, charge la bibliothèque si elle est absente (idempotent), puis construit le site.
 3. **Variables d'environnement** obligatoires en production, sans quoi le build échoue volontairement : `DATABASE_URL`, `APP_SECRET` (32 caractères aléatoires au moins), `ADMIN_EMAIL`. Voir `.env.example`.
+4. **E-mails** (facultatif, pour « Mot de passe oublié ») : `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` — par exemple Gmail avec un mot de passe d'application. Sans eux, l'administrateur crée le lien de réinitialisation depuis la page Modération et le transmet lui-même.
 
 ## La bibliothèque
 
@@ -47,7 +48,9 @@ Limites connues : quelques poèmes de Wikisource perdent leurs sauts de strophe 
 
 ## Sécurité et confidentialité
 
-- Mots de passe hachés en `scrypt`, sessions à jeton haché, un seul cookie de session, aucun traceur.
+- Mots de passe hachés en `scrypt` (jamais chiffrés ni stockés en clair : on ne peut pas les retrouver, seulement les vérifier), sessions à jeton haché, un seul cookie de session, aucun traceur.
+- Changement de mot de passe depuis « Mon espace » (mot de passe actuel exigé, autres appareils déconnectés) ; « Mot de passe oublié » par lien e-mail à usage unique valable une heure (seule son empreinte est stockée, réponse identique que le compte existe ou non, limitation par IP et par adresse).
+- Lectures des poèmes de membres : une par lecteur, par poème et par jour, sans l'auteur ni les robots ; le lecteur n'est qu'une empreinte salée (aucune IP stockée).
 - Limitation de débit atomique en base (connexion, inscription, publication, signalement, génération), par empreinte salée de l'adresse IP : l'IP n'est jamais stockée.
 - Actions de modération revérifiées côté serveur (`requireAdmin`), pas seulement masquées.
 - Un membre ne peut modifier ou supprimer que ses propres poèmes ; les poèmes de la bibliothèque sont intouchables, même signalés.

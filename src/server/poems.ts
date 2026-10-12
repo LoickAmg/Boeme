@@ -44,6 +44,9 @@ export interface PoemView {
   publishedAt: Date | null;
   createdAt: Date;
   favoriteCount: number;
+  /** Lectures et lecteurs distincts (poèmes de membres uniquement ; 0 ailleurs). */
+  viewCount: number;
+  readerCount: number;
 }
 
 const favoriteCount = sql<number>`(select count(*)::int from favorites f where f.poem_id = poems.id)`;
@@ -67,13 +70,15 @@ const viewColumns = {
   publishedAt: poems.publishedAt,
   createdAt: poems.createdAt,
   favoriteCount,
+  viewCount: poems.viewCount,
+  readerCount: poems.readerCount,
 };
 
 function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, (char) => `\\${char}`);
 }
 
-export type PoemSort = "recent" | "populaire" | "titre";
+export type PoemSort = "recent" | "populaire" | "titre" | "lus";
 
 export interface ListPoemsOptions {
   q?: string;
@@ -115,7 +120,9 @@ export async function listPoems(db: Db, options: ListPoemsOptions = {}): Promise
       ? [asc(poems.title)]
       : options.sort === "populaire"
         ? [desc(favoriteCount), desc(poems.publishedAt)]
-        : [desc(poems.publishedAt), desc(poems.id)];
+        : options.sort === "lus"
+          ? [desc(poems.readerCount), desc(poems.viewCount), desc(poems.publishedAt)]
+          : [desc(poems.publishedAt), desc(poems.id)];
 
   const [items, [count]] = await Promise.all([
     db

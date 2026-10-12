@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
   // PGlite (base embarquée du développement) charge ses fichiers WebAssembly par URL : il ne doit pas être empaqueté.
   serverExternalPackages: ["@electric-sql/pglite"],
   // La bibliothèque est lue depuis data/classics.json au chargement de la base.
-  outputFileTracingIncludes: { "/*": ["./data/classics.json"] },
+  // Les images d'aperçu des liens lisent leurs polices dans assets/og.
+  outputFileTracingIncludes: { "/*": ["./data/classics.json"], "/**": ["./assets/og/*.woff"] },
   turbopack: { root: path.resolve(import.meta.dirname) },
   async headers() {
     return [
