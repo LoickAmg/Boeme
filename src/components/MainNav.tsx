@@ -154,8 +154,16 @@ export function MainNav({ items, extra, action }: { items: NavItem[]; extra?: Re
             )}
           </nav>
           {extra ? (
-            // Un clic sur « Mon espace », « Connexion »… referme aussi le menu.
-            <div onClick={() => setOpen(false)} className="mt-3 flex flex-wrap items-center gap-3 border-t border-linen-deep/60 px-1 pt-3 pb-2 text-sm">
+            // « Mon espace », « Connexion »… : un lien referme le menu. « Déconnexion » est un formulaire :
+            // le fermer au clic retirerait le bouton de la page avant l'envoi, et la déconnexion
+            // n'aurait jamais lieu. Le menu se referme donc seulement une fois l'envoi parti.
+            <div
+              onClick={(event) => {
+                if ((event.target as Element).closest("a")) setOpen(false);
+              }}
+              onSubmit={() => window.setTimeout(() => setOpen(false), 0)}
+              className="mt-3 flex flex-wrap items-center gap-3 border-t border-linen-deep/60 px-1 pt-3 pb-2 text-sm"
+            >
               {extra}
             </div>
           ) : null}
