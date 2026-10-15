@@ -7,6 +7,7 @@ const LINKS = [
   { href: "/mentions-legales", label: "Mentions légales" },
   { href: "/confidentialite", label: "Confidentialité" },
   { href: "/contact", label: "Contact" },
+  { href: "/avis", label: "Donner mon avis" },
 ];
 
 export function SiteFooter() {

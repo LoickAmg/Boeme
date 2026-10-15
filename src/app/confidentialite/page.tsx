@@ -75,6 +75,14 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
+      <LegalSection heading="Vos retours et suggestions">
+        <p>
+          Le bouton « Un avis ? » et la page « Donner mon avis » enregistrent votre message, son type et la page d&apos;où il est envoyé. Si vous êtes connecté, votre nom
+          d&apos;auteur l&apos;accompagne ; sinon, il reste anonyme, sauf si vous laissez volontairement un nom ou une adresse pour être recontacté. Le message est transmis à
+          l&apos;éditeur, sur le site et par e-mail, et ne sert qu&apos;à améliorer Boème. Si vous supprimez votre compte, vos retours sont conservés sans votre nom.
+        </p>
+      </LegalSection>
+
       <LegalSection heading="Conservation et suppression">
         <p>
           Vos données sont conservées tant que votre compte existe. Vous pouvez le supprimer à tout moment depuis « Mon espace » : votre compte, vos poèmes, vos brouillons, vos favoris et vos sessions sont alors effacés définitivement. Les signalements que vous avez déposés sont conservés sans lien avec votre identité.

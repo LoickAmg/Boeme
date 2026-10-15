@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 
 import type { Db } from "@/db/client";
-import { poems, users } from "@/db/schema";
+import { feedback, poems, users } from "@/db/schema";
 import type { User } from "@/db/schema";
 
 export const BIO_MAX = 500;
@@ -20,5 +20,7 @@ export async function updateBio(db: Db, user: Pick<User, "id">, bio: string): Pr
  */
 export async function deleteAccount(db: Db, user: Pick<User, "id">): Promise<void> {
   await db.delete(poems).where(and(eq(poems.userId, user.id), eq(poems.origin, "member")));
+  // Ses retours restent (ils servent à améliorer le site), mais sans son nom.
+  await db.update(feedback).set({ authorName: "" }).where(eq(feedback.userId, user.id));
   await db.delete(users).where(eq(users.id, user.id));
 }

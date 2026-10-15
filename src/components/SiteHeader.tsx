@@ -24,12 +24,22 @@ export const NAV: NavItem[] = [
   { href: "/generateur", label: "Générateur" },
 ];
 
-function Account({ user }: { user: User | null }) {
+function Account({ user, newFeedback = 0 }: { user: User | null; newFeedback?: number }) {
   return user ? (
     <>
       {user.role === "admin" && (
         <Link href="/admin/moderation" className="font-medium text-ink-soft transition-colors hover:text-ink">
           Modération
+        </Link>
+      )}
+      {user.role === "admin" && (
+        <Link href="/admin/retours" className="inline-flex items-center gap-1.5 font-medium text-ink-soft transition-colors hover:text-ink">
+          Retours
+          {newFeedback > 0 && (
+            <span className="rounded-full bg-rose-deep px-1.5 py-0.5 text-[0.65rem] font-bold leading-none text-ivory" aria-label={`${newFeedback} nouveaux`}>
+              {newFeedback}
+            </span>
+          )}
         </Link>
       )}
       <Link
@@ -55,7 +65,7 @@ function Account({ user }: { user: User | null }) {
   );
 }
 
-export function SiteHeader({ user }: { user: User | null }) {
+export function SiteHeader({ user, newFeedback = 0 }: { user: User | null; newFeedback?: number }) {
   return (
     <header className="sticky top-0 z-30 border-b border-linen-deep/60 bg-ivory/90 backdrop-blur-md">
       <a
@@ -71,7 +81,7 @@ export function SiteHeader({ user }: { user: User | null }) {
 
         <MainNav
           items={NAV}
-          extra={<Account user={user} />}
+          extra={<Account user={user} newFeedback={newFeedback} />}
           action={
             <Link href="/ecrire" className="rounded-full bg-rose px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-rose-soft">
               Écrire
@@ -83,7 +93,7 @@ export function SiteHeader({ user }: { user: User | null }) {
           <Link href="/ecrire" className="rounded-full bg-rose px-4 py-2 font-semibold text-ink transition-colors hover:bg-rose-soft">
             Écrire
           </Link>
-          <Account user={user} />
+          <Account user={user} newFeedback={newFeedback} />
         </div>
       </div>
     </header>

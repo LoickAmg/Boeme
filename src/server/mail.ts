@@ -63,3 +63,25 @@ export function passwordResetMail(input: { to: string; name: string; link: strin
 </div></body></html>`;
   return { to: input.to, subject: `${site.name} — choisir un nouveau mot de passe`, text, html };
 }
+
+/** Prévient l'administrateur d'un nouveau retour (texte brut + HTML sobre). */
+export function feedbackMail(input: { to: string; kind: string; message: string; page: string; from: string; contact: string; adminUrl: string }): Mail {
+  const lines = [
+    `Nouveau retour sur ${site.name} : ${input.kind}`,
+    "",
+    input.message,
+    "",
+    `De : ${input.from || "visiteur anonyme"}${input.contact ? ` (${input.contact})` : ""}`,
+    `Page : ${input.page || "inconnue"}`,
+    "",
+    `Tous les retours : ${input.adminUrl}`,
+  ];
+  const html = `<!doctype html><html lang="fr"><body style="margin:0;background:#f8f3ec;padding:28px 16px;font-family:Georgia,serif;color:#3a332d">
+<div style="max-width:560px;margin:0 auto;background:#fffaf2;border:1px solid #ddccae;border-radius:18px;padding:28px">
+<p style="margin:0;font-family:Arial,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#7f5551">Nouveau retour · ${escapeHtml(input.kind)}</p>
+<p style="white-space:pre-line;font-size:18px;line-height:1.6;margin:18px 0">${escapeHtml(input.message)}</p>
+<p style="font-family:Arial,sans-serif;font-size:13px;color:#675e58;line-height:1.6">De : ${escapeHtml(input.from || "visiteur anonyme")}${input.contact ? ` — <a href="mailto:${escapeHtml(input.contact)}">${escapeHtml(input.contact)}</a>` : ""}<br>Page : ${escapeHtml(input.page || "inconnue")}</p>
+<p style="margin:22px 0 0"><a href="${escapeHtml(input.adminUrl)}" style="display:inline-block;background:#3a332d;color:#f8f3ec;text-decoration:none;font-family:Arial,sans-serif;font-weight:bold;font-size:14px;padding:12px 22px;border-radius:999px">Voir tous les retours</a></p>
+</div></body></html>`;
+  return { to: input.to, subject: `${site.name} — nouveau retour : ${input.kind}`, text: lines.join("\n"), html };
+}

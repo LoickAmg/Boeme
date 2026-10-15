@@ -246,6 +246,32 @@ export const poemCovers = pgTable("poem_covers", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * Retours des testeurs et des membres (suggestion, bug, idée…), envoyés depuis n'importe quelle
+ * page. L'administrateur les lit dans « Retours » et les reçoit aussi par e-mail.
+ */
+export const FEEDBACK_KINDS = ["suggestion", "bug", "idee", "avis", "autre"] as const;
+export const FEEDBACK_STATUSES = ["nouveau", "lu", "traite"] as const;
+
+export const feedback = pgTable(
+  "feedback",
+  {
+    id: serial("id").primaryKey(),
+    kind: text("kind", { enum: FEEDBACK_KINDS }).notNull(),
+    message: text("message").notNull(),
+    /** Page depuis laquelle le retour a été envoyé (chemin seul, sans paramètres). */
+    page: text("page").notNull().default(""),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    /** Nom d'auteur au moment de l'envoi, ou nom libre d'un visiteur. */
+    authorName: text("author_name").notNull().default(""),
+    /** Adresse laissée volontairement par un visiteur non connecté pour être recontacté. */
+    contact: text("contact").notNull().default(""),
+    status: text("status", { enum: FEEDBACK_STATUSES }).notNull().default("nouveau"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("feedback_status_idx").on(table.status, table.createdAt)],
+);
+
 export const poemsRelations = relations(poems, ({ one }) => ({
   author: one(authors, { fields: [poems.authorId], references: [authors.id] }),
   user: one(users, { fields: [poems.userId], references: [users.id] }),
@@ -257,3 +283,4 @@ export type Poem = typeof poems.$inferSelect;
 export type Report = typeof reports.$inferSelect;
 export type Corpse = typeof corpses.$inferSelect;
 export type CorpseLine = typeof corpseLines.$inferSelect;
+export type Feedback = typeof feedback.$inferSelect;

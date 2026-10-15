@@ -23,7 +23,12 @@ export default async function ModerationPage({ searchParams }: PageProps<"/admin
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12 sm:px-8 sm:py-16">
-      <h1 className="font-serif text-5xl italic text-ink">Modération</h1>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <h1 className="font-serif text-5xl italic text-ink">Modération</h1>
+        <Link href="/admin/retours" className="rounded-full border border-ink px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-ink hover:text-ivory">
+          Retours des lecteurs →
+        </Link>
+      </div>
       <p className="mt-3 max-w-2xl text-ink-soft">
         Un poème de membre est masqué automatiquement à partir de {AUTO_HIDE_REPORTS} signalements de lecteurs différents. « Classer sans suite » le rétablit ; « Masquer » le garde retiré ; « Supprimer » l&apos;efface définitivement.
       </p>

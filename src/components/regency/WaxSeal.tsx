@@ -2,7 +2,24 @@
  * Cachet de cire rose frappé d'un « B » : le clin d'œil Régence de Boème. `stamp` le fait
  * s'imprimer (un léger mouvement de tampon) à son apparition.
  */
-export function WaxSeal({ size = 64, letter = "B", stamp = true, tilt = -6, className = "", label }: { size?: number; letter?: string; stamp?: boolean; tilt?: number; className?: string; label?: string }) {
+export function WaxSeal({
+  size = 64,
+  letter = "B",
+  stamp = true,
+  tilt = -6,
+  broken = false,
+  className = "",
+  label,
+}: {
+  size?: number;
+  letter?: string;
+  stamp?: boolean;
+  tilt?: number;
+  /** Cachet fendu : pour les pages d'erreur (la lettre n'est pas arrivée). */
+  broken?: boolean;
+  className?: string;
+  label?: string;
+}) {
   return (
     <svg
       viewBox="0 0 100 100"
@@ -31,6 +48,13 @@ export function WaxSeal({ size = 64, letter = "B", stamp = true, tilt = -6, clas
       <text x="50" y="52" textAnchor="middle" dominantBaseline="middle" fontFamily="Cormorant Garamond, Georgia, serif" fontStyle="italic" fontSize="34" fill="#f3e1dd" fillOpacity="0.92">
         {letter}
       </text>
+      {broken && (
+        <>
+          {/* La fêlure : un trait sombre en zigzag, bordé d'un éclat clair. */}
+          <path d="M30 6 L44 30 L36 44 L54 58 L46 74 L60 96" fill="none" stroke="#3d2725" strokeWidth="3.2" strokeLinejoin="round" />
+          <path d="M32 6 L46 30 L38 44 L56 58 L48 74 L62 96" fill="none" stroke="#e6c7c2" strokeOpacity="0.45" strokeWidth="1" strokeLinejoin="round" />
+        </>
+      )}
       {/* Reflet : la cire est encore brillante. */}
       <ellipse cx="36" cy="28" rx="11" ry="5" fill="#fff" fillOpacity="0.18" transform="rotate(-25 36 28)" />
     </svg>
