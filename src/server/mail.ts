@@ -64,6 +64,30 @@ export function passwordResetMail(input: { to: string; name: string; link: strin
   return { to: input.to, subject: `${site.name} — choisir un nouveau mot de passe`, text, html };
 }
 
+export function verificationMail(input: { to: string; name: string; link: string; hours: number }): Mail {
+  const text = [
+    `Bonjour ${input.name},`,
+    "",
+    `Bienvenue sur ${site.name}. Confirmez votre adresse e-mail en ouvrant ce lien (valable ${input.hours} heures) :`,
+    "",
+    input.link,
+    "",
+    "Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement ce message.",
+    "",
+    `— ${site.name}`,
+  ].join("\n");
+  const html = `<!doctype html><html lang="fr"><body style="margin:0;background:#f8f3ec;padding:32px 16px;font-family:Georgia,serif;color:#3a332d">
+<div style="max-width:520px;margin:0 auto;background:#fffaf2;border:1px solid #ddccae;border-radius:18px;padding:32px">
+<p style="margin:0 0 4px;font-size:28px;font-style:italic">${site.name}</p>
+<p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#7f5551">Bienvenue</p>
+<p style="font-size:17px;line-height:1.6">Bonjour ${escapeHtml(input.name)},</p>
+<p style="font-size:17px;line-height:1.6">Confirmez votre adresse e-mail pour profiter de ${site.name}. Ce lien est valable ${input.hours} heures.</p>
+<p style="margin:28px 0"><a href="${escapeHtml(input.link)}" style="display:inline-block;background:#3a332d;color:#f8f3ec;text-decoration:none;font-family:Arial,sans-serif;font-weight:bold;font-size:14px;padding:14px 26px;border-radius:999px">Confirmer mon adresse</a></p>
+<p style="font-family:Arial,sans-serif;font-size:13px;line-height:1.6;color:#675e58">Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement ce message.</p>
+</div></body></html>`;
+  return { to: input.to, subject: `${site.name} — confirmez votre adresse e-mail`, text, html };
+}
+
 /** Prévient l'administrateur d'un nouveau retour (texte brut + HTML sobre). */
 export function feedbackMail(input: { to: string; kind: string; message: string; page: string; from: string; contact: string; adminUrl: string }): Mail {
   const lines = [

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { ResendVerificationForm } from "@/components/EmailVerificationForms";
 import { ChangePasswordForm } from "@/components/PasswordForms";
 import { BioForm, DeleteAccountForm } from "@/components/ProfileForms";
 import { PoemCard } from "@/components/PoemCard";
@@ -29,6 +30,13 @@ export default async function AccountPage({ searchParams }: PageProps<"/compte">
     <div className="mx-auto w-full max-w-5xl px-6 py-12 sm:px-8 sm:py-16">
       <h1 className="font-serif text-5xl italic text-ink">Bonjour, {user.name}</h1>
       <p className="mt-2 text-sm text-ink-soft">{user.email}</p>
+
+      {!user.emailVerifiedAt && (
+        <div className="mt-6 flex flex-wrap items-center gap-4 rounded-xl border border-rose bg-rose-soft/40 px-4 py-3 text-sm text-ink">
+          <p>Votre adresse e-mail n&apos;est pas encore confirmée.</p>
+          <ResendVerificationForm />
+        </div>
+      )}
 
       {(query.brouillon || query.supprime || query["mot-de-passe"]) && (
         <p role="status" className="mt-6 rounded-xl border border-rose bg-rose-soft/40 px-4 py-3 text-sm text-ink">

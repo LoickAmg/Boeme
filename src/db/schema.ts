@@ -24,6 +24,8 @@ export const users = pgTable(
     name: text("name").notNull(),
     bio: text("bio").notNull().default(""),
     role: text("role", { enum: USER_ROLES }).notNull().default("member"),
+    /** Date de confirmation de l'adresse e-mail, ou `null` tant qu'elle n'est pas vérifiée. */
+    emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [uniqueIndex("users_email_unique").on(table.email)],
@@ -58,6 +60,23 @@ export const passwordResets = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("password_resets_user_idx").on(table.userId)],
+);
+
+/**
+ * Jeton de confirmation de l'adresse e-mail : seule son empreinte SHA-256 est stockée, comme
+ * pour `passwordResets`. Un nouvel envoi annule les précédents.
+ */
+export const emailVerifications = pgTable(
+  "email_verifications",
+  {
+    id: text("id").primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("email_verifications_user_idx").on(table.userId)],
 );
 
 export const rateLimits = pgTable("rate_limits", {

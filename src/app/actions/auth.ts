@@ -4,6 +4,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { sendVerificationEmail } from "@/app/actions/email-verification";
 import { getDb } from "@/db/client";
 import { safeReturnPath } from "@/lib/redirect";
 import {
@@ -58,13 +59,15 @@ export async function registerAction(_previous: AuthState, formData: FormData): 
   const limit = await hitRateLimit(db, `register:${clientFingerprint(await headers())}`, { max: 8, windowSeconds: 3600 });
   if (!limit.allowed) return { message: "Trop d'inscriptions depuis cette adresse. Réessayez plus tard.", values };
 
+  let user;
   try {
-    const user = await registerUser(db, parsed.data, { adminEmail: process.env.ADMIN_EMAIL });
+    user = await registerUser(db, parsed.data, { adminEmail: process.env.ADMIN_EMAIL });
     await openSession(user.id);
   } catch (error) {
     if (error instanceof EmailTakenError) return { errors: { email: error.message }, values };
     throw error;
   }
+  await sendVerificationEmail(db, user);
   redirect(safeReturnPath(raw.retour));
 }
 
